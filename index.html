@@ -18,24 +18,20 @@
         }
         .container { max-width: 480px; margin: 0 auto; }
 
-        /* Хедер */
         .header { text-align: center; margin-bottom: 16px; }
         .header .icon { font-size: 48px; display: block; margin-bottom: 8px; animation: flicker 3s infinite; }
         @keyframes flicker { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
         .header h1 { font-size: 22px; margin-bottom: 2px; background: linear-gradient(135deg, #feca57, #ff9ff3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .header p { color: #666; font-size: 13px; }
 
-        /* Табы */
         .tabs { display: flex; gap: 4px; margin-bottom: 16px; background: #1a1a2e; border-radius: 12px; padding: 4px; }
         .tab { flex: 1; padding: 10px 8px; text-align: center; border-radius: 10px; font-size: 13px; cursor: pointer; transition: all 0.2s; color: #888; border: none; background: transparent; }
         .tab.active { background: #16213e; color: #feca57; }
         .tab .tab-emoji { display: block; font-size: 18px; margin-bottom: 2px; }
 
-        /* Панели */
         .panel { display: none; }
         .panel.active { display: block; }
 
-        /* Карточка */
         .preview { margin-bottom: 16px; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
         .card {
             aspect-ratio: 3/4;
@@ -90,7 +86,6 @@
             writing-mode: vertical-rl;
         }
 
-        /* Фоны */
         .bg-sunset { background: linear-gradient(160deg, #1a0a2e, #5b2c56, #c94b4b, #f0a050); color: #fff; }
         .bg-night { background: linear-gradient(160deg, #0a0a1a, #16213e, #1a1a3e, #2d1b69); color: #c8c8e8; }
         .bg-ocean { background: linear-gradient(160deg, #0c1b33, #1b3a4b, #26547c, #4299e1); color: #e0f0ff; }
@@ -100,13 +95,11 @@
         .bg-light { background: linear-gradient(160deg, #e8e8e8, #f2f2f2, #fafafa, #ffffff); color: #1a1a1a; }
         .bg-gold { background: linear-gradient(160deg, #1a0f00, #3d2800, #8b6914, #d4af37); color: #fff8e0; }
 
-        /* Шрифты */
         .card.font-serif .card-text { font-family: Georgia, 'Times New Roman', serif; }
         .card.font-sans .card-text { font-family: 'Helvetica Neue', Arial, sans-serif; font-style: normal; }
         .card.font-hand .card-text { font-family: 'Caveat', 'Brush Script MT', cursive; font-size: 30px; }
         .card.font-mono .card-text { font-family: 'Courier New', Courier, monospace; font-style: normal; font-size: 22px; }
 
-        /* Текст */
         textarea {
             width: 100%;
             padding: 14px;
@@ -124,7 +117,6 @@
         textarea::placeholder { color: #555; }
         .char-count { text-align: right; font-size: 11px; color: #555; margin-top: 4px; }
 
-        /* Секции */
         .section { margin-bottom: 14px; }
         .section-label { font-size: 12px; color: #666; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
         .options { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -139,7 +131,6 @@
         .option .font-sample { font-size: 24px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: #16213e; color: #e0e0e0; }
         .option .opt-label { font-size: 10px; color: #888; }
 
-        /* Украшения */
         .decor-options { display: flex; gap: 8px; }
         .decor-opt {
             padding: 8px 12px; border-radius: 10px; font-size: 13px; cursor: pointer;
@@ -147,7 +138,6 @@
         }
         .decor-opt.active { border-color: #feca57; color: #feca57; background: rgba(254,202,87,0.1); }
 
-        /* Стикеры */
         .sticker-grid { display: flex; gap: 8px; flex-wrap: wrap; }
         .sticker-btn {
             width: 44px; height: 44px; font-size: 24px; display: flex; align-items: center; justify-content: center;
@@ -155,7 +145,6 @@
         }
         .sticker-btn:active { transform: scale(0.9); }
 
-        /* История */
         .history-item {
             display: flex; gap: 12px; align-items: center; padding: 12px;
             background: #1a1a2e; border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s;
@@ -169,7 +158,6 @@
         .history-text .ht-title { color: #e0e0e0; font-size: 14px; margin-bottom: 2px; }
         .history-empty { text-align: center; padding: 40px 20px; color: #555; }
 
-        /* Случайная тема */
         .prompt-card {
             background: #1a1a2e; border-radius: 14px; padding: 20px; text-align: center; margin-bottom: 16px;
         }
@@ -179,7 +167,6 @@
             border: none; cursor: pointer; font-size: 14px; transition: all 0.2s;
         }
 
-        /* Кнопки */
         .buttons { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
         button {
             flex: 1; min-width: 120px; padding: 14px 16px; border: none; border-radius: 14px;
@@ -190,7 +177,6 @@
         .btn-outline { background: transparent; border: 2px solid #333; color: #e0e0e0; }
         .btn-small { padding: 8px 16px; font-size: 13px; min-width: auto; flex: 0; }
 
-        /* Тост */
         .toast {
             position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
             background: #2a2a3e; color: #e0e0e0; padding: 12px 24px; border-radius: 30px;
@@ -199,20 +185,17 @@
         }
         .toast.show { opacity: 1; }
 
-        /* Подвал */
         .footer { text-align: center; padding: 20px; color: #444; font-size: 11px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Хедер -->
         <div class="header">
             <span class="icon">🕯</span>
             <h1>Строчки - одиночки</h1>
             <p>Создай красивую карточку</p>
         </div>
 
-        <!-- Табы -->
         <div class="tabs">
             <button class="tab active" data-panel="editor">
                 <span class="tab-emoji">🎨</span> Редактор
@@ -225,9 +208,7 @@
             </button>
         </div>
 
-        <!-- Панель: Редактор -->
         <div class="panel active" id="panel-editor">
-            <!-- Карточка -->
             <div class="preview">
                 <div class="card bg-sunset font-serif" id="card">
                     <div class="card-decoration" id="cardDecor">✧ ✧ ✧</div>
@@ -239,11 +220,9 @@
                 </div>
             </div>
 
-            <!-- Ввод текста -->
             <textarea id="textInput" placeholder="О чём твоя строчка? Пиши..." maxlength="350" rows="3"></textarea>
             <div class="char-count"><span id="charCount">0</span>/350</div>
 
-            <!-- Фон -->
             <div class="section">
                 <div class="section-label">🎨 Фон</div>
                 <div class="options" id="bgOptions">
@@ -258,7 +237,6 @@
                 </div>
             </div>
 
-            <!-- Шрифт -->
             <div class="section">
                 <div class="section-label">✍️ Шрифт</div>
                 <div class="options" id="fontOptions">
@@ -269,7 +247,6 @@
                 </div>
             </div>
 
-            <!-- Украшение -->
             <div class="section">
                 <div class="section-label">✨ Украшение</div>
                 <div class="decor-options" id="decorOptions">
@@ -281,7 +258,6 @@
                 </div>
             </div>
 
-            <!-- Стикеры -->
             <div class="section">
                 <div class="section-label">🪄 Добавить значок</div>
                 <div class="sticker-grid" id="stickerOptions">
@@ -297,14 +273,12 @@
                 </div>
             </div>
 
-            <!-- Кнопки -->
             <div class="buttons">
                 <button class="btn-primary" id="sendBtn">📤 Отправить в канал</button>
                 <button class="btn-outline" id="saveLocallyBtn">💾 Сохранить себе</button>
             </div>
         </div>
 
-        <!-- Панель: Идеи -->
         <div class="panel" id="panel-prompts">
             <div class="prompt-card">
                 <div class="prompt-text" id="promptText">Загрузка...</div>
@@ -323,25 +297,56 @@
             </div>
         </div>
 
-        <!-- Панель: История -->
         <div class="panel" id="panel-history">
             <div id="historyList"></div>
         </div>
 
-        <!-- Тост -->
         <div class="toast" id="toast"></div>
-
-        <!-- Подвал -->
         <div class="footer">Строчки - одиночки 🕯</div>
     </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.enableClosingConfirmation();
+        // ============ ДИАГНОСТИКА ============
+        console.log('=== WebApp Diagnostic ===');
+        console.log('Telegram WebApp API:', window.Telegram ? 'LOADED' : 'NOT LOADED');
+        
+        const tg = window.Telegram?.WebApp;
+        console.log('tg object:', tg ? 'EXISTS' : 'NULL');
+        
+        if (tg) {
+            console.log('sendData function:', typeof tg.sendData);
+            console.log('initData:', tg.initData);
+            console.log('initDataUnsafe:', JSON.stringify(tg.initDataUnsafe));
+            tg.expand();
+            tg.enableClosingConfirmation();
+        }
+        console.log('=========================');
 
+        // Дебаг-панель на экране
+        const debugDiv = document.createElement('div');
+        debugDiv.style.cssText = 'position:fixed;top:10px;left:10px;background:rgba(0,0,0,0.85);color:#0f0;padding:10px;font-size:11px;z-index:9999;border-radius:8px;max-width:90%;word-break:break-all;font-family:monospace;';
+        debugDiv.id = 'debugInfo';
+        document.body.appendChild(debugDiv);
+
+        function updateDebug(msg) {
+            const d = document.getElementById('debugInfo');
+            if (d) {
+                const time = new Date().toLocaleTimeString();
+                d.textContent = `[${time}] ${msg}`;
+            }
+            console.log('[DEBUG]', msg);
+        }
+
+        if (!tg) {
+            updateDebug('❌ Telegram WebApp API не загружен!');
+        } else {
+            updateDebug('✅ API загружен. sendData: ' + typeof tg.sendData);
+        }
+        // ====================================
+
+        // DOM элементы
         const card = document.getElementById('card');
         const cardText = document.getElementById('cardText');
         const cardAuthor = document.getElementById('cardAuthor');
@@ -358,13 +363,12 @@
         let currentSticker = '';
         let history = JSON.parse(localStorage.getItem('candle_history') || '[]');
 
-        const userName = tg.initDataUnsafe?.user?.first_name || 'Автор';
+        const userName = tg?.initDataUnsafe?.user?.first_name || 'Автор';
         cardAuthor.textContent = `— ${userName}`;
 
         const today = new Date();
         cardDate.textContent = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
 
-        // Промпты
         const prompts = [
             "Что ты чувствуешь прямо сейчас?",
             "Опиши момент, который хотел бы запомнить навсегда",
@@ -391,26 +395,21 @@
             setTimeout(() => toast.classList.remove('show'), 2000);
         }
 
-        // Обновление карточки
         function updateCard() {
             const text = textInput.value || 'Напиши свою строчку...';
             cardText.textContent = text;
             charCount.textContent = textInput.value.length;
 
-            // Фон
             const allBg = ['bg-sunset','bg-night','bg-ocean','bg-forest','bg-rose','bg-dark','bg-light','bg-gold'];
             allBg.forEach(b => card.classList.remove(b));
             card.classList.add(currentBg);
 
-            // Шрифт
             const allFonts = ['font-serif','font-sans','font-hand','font-mono'];
             allFonts.forEach(f => card.classList.remove(f));
             card.classList.add(currentFont);
 
-            // Украшение
             cardDecor.textContent = currentDecor;
 
-            // Стикер в тексте
             if (currentSticker) {
                 const raw = textInput.value || 'Напиши свою строчку...';
                 cardText.textContent = currentSticker + ' ' + raw;
@@ -419,7 +418,6 @@
 
         textInput.addEventListener('input', updateCard);
 
-        // Выбор фона
         document.querySelectorAll('#bgOptions .option').forEach(opt => {
             opt.addEventListener('click', () => {
                 document.querySelectorAll('#bgOptions .option').forEach(o => o.classList.remove('active'));
@@ -429,7 +427,6 @@
             });
         });
 
-        // Выбор шрифта
         document.querySelectorAll('#fontOptions .option').forEach(opt => {
             opt.addEventListener('click', () => {
                 document.querySelectorAll('#fontOptions .option').forEach(o => o.classList.remove('active'));
@@ -439,7 +436,6 @@
             });
         });
 
-        // Украшение
         document.querySelectorAll('#decorOptions .decor-opt').forEach(opt => {
             opt.addEventListener('click', () => {
                 document.querySelectorAll('#decorOptions .decor-opt').forEach(o => o.classList.remove('active'));
@@ -449,7 +445,6 @@
             });
         });
 
-        // Стикеры
         document.querySelectorAll('#stickerOptions .sticker-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 currentSticker = btn.dataset.sticker;
@@ -458,7 +453,6 @@
             });
         });
 
-        // Темы
         document.querySelectorAll('#topicOptions .decor-opt').forEach(opt => {
             opt.addEventListener('click', () => {
                 textInput.placeholder = `Напиши о теме «${opt.dataset.topic}»...`;
@@ -468,10 +462,8 @@
             });
         });
 
-        // Новая тема
         document.getElementById('newPromptBtn').addEventListener('click', randomPrompt);
 
-        // Табы
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -482,7 +474,6 @@
             });
         });
 
-        // История
         function renderHistory() {
             const list = document.getElementById('historyList');
             if (history.length === 0) {
@@ -500,7 +491,7 @@
             `).join('');
         }
 
-        function loadHistory(index) {
+        window.loadHistory = function(index) {
             const h = history[index];
             if (!h) return;
             textInput.value = h.text || '';
@@ -524,7 +515,7 @@
             updateCard();
             document.querySelector('.tab[data-panel="editor"]').click();
             showToast('Карточка загружена ✨');
-        }
+        };
 
         function saveToHistory(text, bg, font, decor, sticker) {
             history.push({
@@ -536,34 +527,52 @@
             localStorage.setItem('candle_history', JSON.stringify(history));
         }
 
-        function getBgGradient() {
-            return getComputedStyle(card).background;
-        }
-
-        // Отправка в бота
-        document.getElementById('sendBtn').addEventListener('click', async () => {
+        // ============ ОТПРАВКА В БОТА (с диагностикой) ============
+        document.getElementById('sendBtn').addEventListener('click', async function(e) {
+            updateDebug('Кнопка нажата');
+            
+            if (!tg) {
+                updateDebug('❌ tg не определён');
+                showToast('❌ Ошибка: Telegram API не загружен');
+                return;
+            }
+            
             const text = textInput.value.trim();
-            if (!text) { showToast('Напиши строчку ✏️'); return; }
-
-            showToast('Создаю карточку...');
-
+            if (!text) {
+                updateDebug('❌ Нет текста');
+                showToast('Напиши строчку ✏️');
+                return;
+            }
+            
+            updateDebug('Генерация canvas...');
+            
             try {
                 const canvas = await html2canvas(card, { scale: 2, backgroundColor: null });
+                updateDebug('Canvas создан');
+                
                 const imageData = canvas.toDataURL('image/png');
-
-                saveToHistory(text, currentBg, currentFont, currentDecor, currentSticker);
-
-                tg.sendData(JSON.stringify({
+                updateDebug('Image data: ' + Math.round(imageData.length/1024) + ' KB');
+                
+                const payload = JSON.stringify({
                     action: 'create_card',
-                    text, bg: currentBg, font: currentFont,
-                    decor: currentDecor, sticker: currentSticker,
+                    text: text,
+                    bg: currentBg,
+                    font: currentFont,
                     image: imageData
-                }));
-
+                });
+                
+                updateDebug('Отправка: ' + Math.round(payload.length/1024) + ' KB');
+                
+                tg.sendData(payload);
+                
+                updateDebug('✅ Данные отправлены!');
+                saveToHistory(text, currentBg, currentFont, currentDecor, currentSticker);
                 showToast('✅ Отправлено в канал!');
-            } catch (e) {
-                showToast('❌ Ошибка. Попробуй ещё раз.');
-                console.error(e);
+                
+            } catch(err) {
+                updateDebug('❌ Ошибка: ' + err.message);
+                console.error(err);
+                showToast('❌ Ошибка: ' + err.message);
             }
         });
 
@@ -587,6 +596,7 @@
         });
 
         updateCard();
+        updateDebug('✅ Готов к работе');
     </script>
 </body>
 </html>
