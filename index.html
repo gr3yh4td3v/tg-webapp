@@ -324,7 +324,6 @@
         }
         console.log('=========================');
 
-        // Дебаг-панель на экране
         const debugDiv = document.createElement('div');
         debugDiv.style.cssText = 'position:fixed;top:10px;left:10px;background:rgba(0,0,0,0.85);color:#0f0;padding:10px;font-size:11px;z-index:9999;border-radius:8px;max-width:90%;word-break:break-all;font-family:monospace;';
         debugDiv.id = 'debugInfo';
@@ -346,7 +345,6 @@
         }
         // ====================================
 
-        // DOM элементы
         const card = document.getElementById('card');
         const cardText = document.getElementById('cardText');
         const cardAuthor = document.getElementById('cardAuthor');
@@ -527,7 +525,7 @@
             localStorage.setItem('candle_history', JSON.stringify(history));
         }
 
-        // ============ ОТПРАВКА В БОТА (с диагностикой) ============
+        // ============ ОТПРАВКА В БОТА (без картинки) ============
         document.getElementById('sendBtn').addEventListener('click', async function(e) {
             updateDebug('Кнопка нажата');
             
@@ -544,30 +542,25 @@
                 return;
             }
             
-            updateDebug('Генерация canvas...');
+            updateDebug('Формирую данные...');
             
             try {
-                const canvas = await html2canvas(card, { scale: 2, backgroundColor: null });
-                updateDebug('Canvas создан');
-                
-                const imageData = canvas.toDataURL('image/png');
-                updateDebug('Image data: ' + Math.round(imageData.length/1024) + ' KB');
-                
                 const payload = JSON.stringify({
                     action: 'create_card',
                     text: text,
                     bg: currentBg,
                     font: currentFont,
-                    image: imageData
+                    decor: currentDecor,
+                    sticker: currentSticker
                 });
                 
-                updateDebug('Отправка: ' + Math.round(payload.length/1024) + ' KB');
+                updateDebug('Отправка: ' + payload.length + ' байт');
                 
                 tg.sendData(payload);
                 
                 updateDebug('✅ Данные отправлены!');
                 saveToHistory(text, currentBg, currentFont, currentDecor, currentSticker);
-                showToast('✅ Отправлено в канал!');
+                showToast('✅ Отправлено!');
                 
             } catch(err) {
                 updateDebug('❌ Ошибка: ' + err.message);
