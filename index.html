@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--tg-theme-bg-color, #fff);
+            color: var(--tg-theme-text-color, #000);
+            padding: 20px;
+            text-align: center;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #fff);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        button:active { opacity: 0.7; }
+        #counter { font-size: 48px; font-weight: bold; margin: 20px 0; }
+        .card {
+            background: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <p>Счётчик:</p>
+        <div id="counter">0</div>
+        <button onclick="increment()">+1</button>
+    </div>
+    
+    <button onclick="sendData()">📤 Отправить в бот</button>
+    
+    <script>
+        const tg = window.Telegram.WebApp;
+        let counter = 0;
+        
+        tg.ready();
+        tg.expand();
+        
+        function increment() {
+            counter++;
+            document.getElementById('counter').textContent = counter;
+            tg.HapticFeedback.impactOccurred('light');
+        }
+        
+        function sendData() {
+            tg.sendData(JSON.stringify({
+                counter: counter,
+                timestamp: new Date().toISOString()
+            }));
+            tg.HapticFeedback.notificationOccurred('success');
+        }
+    </script>
+</body>
+</html>
