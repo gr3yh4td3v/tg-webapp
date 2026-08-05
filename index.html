@@ -12,17 +12,15 @@
             color: #e0e0e0;
             min-height: 100vh;
             padding: 16px;
-            padding-bottom: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .container { max-width: 480px; margin: 0 auto; }
-
-        .header { text-align: center; margin-bottom: 20px; }
-        .header .icon { font-size: 48px; display: block; margin-bottom: 8px; }
-        .header h1 { font-size: 22px; background: linear-gradient(135deg, #feca57, #ff9ff3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .header p { color: #666; font-size: 13px; margin-top: 4px; }
-
-        .preview { margin-bottom: 16px; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+        h1 { font-size: 22px; margin-bottom: 16px; background: linear-gradient(135deg, #feca57, #ff9ff3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; }
+        
         .card {
+            width: 100%;
+            max-width: 360px;
             aspect-ratio: 3/4;
             padding: 40px 28px;
             display: flex;
@@ -30,361 +28,144 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-        .card-text {
-            font-size: 26px;
-            line-height: 1.5;
+            border-radius: 16px;
             margin-bottom: 16px;
-            word-break: break-word;
-            z-index: 1;
-            font-style: italic;
+            transition: all 0.3s;
         }
+        .card-text { font-size: 26px; line-height: 1.5; margin-bottom: 16px; word-break: break-word; font-style: italic; font-family: Georgia, serif; }
         .card-text::before { content: '«'; }
         .card-text::after { content: '»'; }
         .card-divider { width: 40px; height: 2px; background: currentColor; opacity: 0.4; margin-bottom: 16px; }
-        .card-author { font-size: 14px; opacity: 0.7; z-index: 1; }
-        .card-channel { position: absolute; bottom: 20px; font-size: 11px; opacity: 0.4; z-index: 1; }
-
-        .bg-sunset { background: linear-gradient(160deg, #1a0a2e, #5b2c56, #c94b4b, #f0a050); color: #fff; }
-        .bg-night { background: linear-gradient(160deg, #0a0a1a, #16213e, #1a1a3e, #2d1b69); color: #c8c8e8; }
-        .bg-ocean { background: linear-gradient(160deg, #0c1b33, #1b3a4b, #26547c, #4299e1); color: #e0f0ff; }
-        .bg-forest { background: linear-gradient(160deg, #0d1f0d, #1a3a1a, #2d5a2d, #4a7c4a); color: #d8f0d8; }
-        .bg-rose { background: linear-gradient(160deg, #2d0a1a, #5c2d4a, #8b5a6a, #c4909a); color: #ffe0e8; }
-        .bg-dark { background: linear-gradient(160deg, #050505, #111111, #1a1a1a, #252525); color: #ccc; }
-        .bg-light { background: linear-gradient(160deg, #e8e8e8, #f2f2f2, #fafafa, #ffffff); color: #1a1a1a; }
-        .bg-gold { background: linear-gradient(160deg, #1a0f00, #3d2800, #8b6914, #d4af37); color: #fff8e0; }
-        .bg-lavender { background: linear-gradient(160deg, #1a0a2e, #4a2d5c, #8b6baa, #c9b8e8); color: #f8f0ff; }
-        .bg-cherry { background: linear-gradient(160deg, #1a0a0a, #4a1a1a, #8b2d2d, #c94b4b); color: #ffe0e0; }
-        .bg-mint { background: linear-gradient(160deg, #0a1a1a, #1a3a3a, #2d5a5a, #4b8b8b); color: #e0f8f8; }
-        .bg-sunrise { background: linear-gradient(160deg, #1a0f00, #5c3a1a, #c97a2d, #f0c050); color: #fff8e8; }
-
-        .card.font-serif .card-text { font-family: Georgia, serif; }
-        .card.font-sans .card-text { font-family: 'Helvetica Neue', Arial, sans-serif; font-style: normal; }
-        .card.font-hand .card-text { font-family: 'Brush Script MT', cursive; font-size: 30px; }
-        .card.font-mono .card-text { font-family: 'Courier New', monospace; font-style: normal; font-size: 22px; }
-        .card.font-narrow .card-text { font-family: 'Arial Narrow', sans-serif; font-style: normal; font-size: 24px; letter-spacing: 1px; }
-        .card.font-wide .card-text { font-family: 'Gill Sans', sans-serif; font-size: 28px; letter-spacing: 2px; }
-
-        .card.size-small .card-text { font-size: 20px; }
-        .card.size-medium .card-text { font-size: 26px; }
-        .card.size-large .card-text { font-size: 32px; }
-        .card.size-xlarge .card-text { font-size: 38px; }
-
-        .card.align-left { text-align: left; align-items: flex-start; padding: 40px 28px; }
-        .card.align-center { text-align: center; align-items: center; }
-        .card.align-right { text-align: right; align-items: flex-end; padding: 40px 28px; }
-
+        .card-author { font-size: 14px; opacity: 0.7; }
+        .card-channel { margin-top: 30px; font-size: 11px; opacity: 0.4; }
+        
         textarea {
-            width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #2a2a3e;
-            background: #1a1a2e; color: #e0e0e0; font-size: 16px; resize: vertical;
-            min-height: 100px; font-family: inherit; transition: border-color 0.3s;
+            width: 100%; max-width: 360px; padding: 14px; border-radius: 14px;
+            border: 1px solid #2a2a3e; background: #1a1a2e; color: #e0e0e0;
+            font-size: 16px; resize: vertical; min-height: 100px; margin-bottom: 12px;
         }
         textarea:focus { outline: none; border-color: #feca57; }
         textarea::placeholder { color: #555; }
-        .char-count { text-align: right; font-size: 11px; color: #555; margin-top: 4px; }
-
-        .section { margin-bottom: 14px; }
-        .section-label { font-size: 12px; color: #666; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        .options { display: flex; gap: 8px; flex-wrap: wrap; }
-        .option {
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-            padding: 8px 6px; border-radius: 12px; border: 2px solid transparent;
-            cursor: pointer; transition: all 0.2s; min-width: 56px; background: #1a1a2e;
+        
+        .options { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 16px; max-width: 360px; }
+        .opt {
+            width: 36px; height: 36px; border-radius: 10px; cursor: pointer;
+            border: 2px solid transparent; transition: all 0.2s;
         }
-        .option.active { border-color: #feca57; background: rgba(254,202,87,0.1); }
-        .option:active { transform: scale(0.95); }
-        .option .swatch { width: 36px; height: 36px; border-radius: 10px; }
-        .option .font-sample { font-size: 24px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: #16213e; color: #e0e0e0; }
-        .option .opt-label { font-size: 10px; color: #888; }
+        .opt.active { border-color: #feca57; transform: scale(1.1); }
+        
+        .bg1 { background: linear-gradient(160deg, #1a0a2e, #c94b4b, #f0a050); color: #fff; }
+        .bg2 { background: linear-gradient(160deg, #0a0a1a, #1a1a3e, #2d1b69); color: #c8c8e8; }
+        .bg3 { background: linear-gradient(160deg, #0c1b33, #26547c, #4299e1); color: #e0f0ff; }
+        .bg4 { background: linear-gradient(160deg, #0d1f0d, #2d5a2d, #4a7c4a); color: #d8f0d8; }
+        .bg5 { background: linear-gradient(160deg, #2d0a1a, #8b5a6a, #c4909a); color: #ffe0e8; }
+        .bg6 { background: linear-gradient(160deg, #050505, #1a1a1a, #252525); color: #ccc; }
+        .bg7 { background: linear-gradient(160deg, #e8e8e8, #fafafa, #fff); color: #1a1a1a; }
+        .bg8 { background: linear-gradient(160deg, #1a0f00, #8b6914, #d4af37); color: #fff8e0; }
 
-        .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
-        .toggle-row span { font-size: 14px; }
-        .toggle {
-            width: 44px; height: 24px; background: #333; border-radius: 12px;
-            position: relative; cursor: pointer; transition: background 0.3s;
-        }
-        .toggle.active { background: #feca57; }
-        .toggle::after {
-            content: ''; width: 20px; height: 20px; background: #fff; border-radius: 50%;
-            position: absolute; top: 2px; left: 2px; transition: left 0.3s;
-        }
-        .toggle.active::after { left: 22px; }
-
-        .buttons { display: flex; gap: 8px; margin-top: 20px; }
         button {
-            flex: 1; padding: 14px; border: none; border-radius: 14px;
-            font-size: 15px; cursor: pointer; transition: all 0.2s; font-weight: 600;
+            width: 100%; max-width: 360px; padding: 16px; border: none; border-radius: 14px;
+            font-size: 16px; cursor: pointer; font-weight: 600; margin-bottom: 8px;
+            background: linear-gradient(135deg, #feca57, #ff9ff3); color: #1a1a2e;
+            transition: all 0.2s;
         }
         button:active { transform: scale(0.97); }
-        .btn-primary { background: linear-gradient(135deg, #feca57, #ff9ff3); color: #1a1a2e; }
-        .btn-outline { background: transparent; border: 2px solid #333; color: #e0e0e0; }
-
-        .toast {
-            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
-            background: #2a2a3e; color: #e0e0e0; padding: 12px 24px; border-radius: 30px;
-            font-size: 14px; z-index: 100; opacity: 0; transition: opacity 0.3s;
-            pointer-events: none; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-        .toast.show { opacity: 1; }
         
-        .footer { text-align: center; padding: 20px; color: #444; font-size: 11px; }
+        .status {
+            text-align: center; color: #888; font-size: 13px; margin-top: 8px;
+            min-height: 20px; max-width: 360px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <span class="icon">🕯</span>
-            <h1>Строчки - одиночки</h1>
-            <p>Создай красивую карточку</p>
-        </div>
-
-        <div class="preview" id="previewWrap">
-            <div class="card bg-sunset font-serif size-medium align-center" id="card">
-                <div class="card-decoration" id="cardDecor">✧ ✧ ✧</div>
-                <div class="card-date" id="cardDate"></div>
-                <div class="card-sticker" id="cardSticker" style="display:none"></div>
-                <div class="card-text" id="cardText">Напиши свою строчку...</div>
-                <div class="card-divider"></div>
-                <div class="card-author" id="cardAuthor">— Автор</div>
-                <div class="card-channel">Строчки - одиночки 🕯</div>
-            </div>
-        </div>
-
-        <textarea id="textInput" placeholder="О чём твоя строчка? Пиши..." maxlength="350" rows="3"></textarea>
-        <div class="char-count"><span id="charCount">0</span>/350</div>
-
-        <!-- Фоны -->
-        <div class="section">
-            <div class="section-label">🎨 Фон</div>
-            <div class="options" id="bgOptions">
-                <div class="option active" data-bg="bg-sunset"><div class="swatch" style="background:linear-gradient(160deg,#1a0a2e,#c94b4b,#f0a050)"></div><span class="opt-label">Закат</span></div>
-                <div class="option" data-bg="bg-night"><div class="swatch" style="background:linear-gradient(160deg,#0a0a1a,#1a1a3e,#2d1b69)"></div><span class="opt-label">Ночь</span></div>
-                <div class="option" data-bg="bg-ocean"><div class="swatch" style="background:linear-gradient(160deg,#0c1b33,#26547c,#4299e1)"></div><span class="opt-label">Океан</span></div>
-                <div class="option" data-bg="bg-forest"><div class="swatch" style="background:linear-gradient(160deg,#0d1f0d,#2d5a2d,#4a7c4a)"></div><span class="opt-label">Лес</span></div>
-                <div class="option" data-bg="bg-rose"><div class="swatch" style="background:linear-gradient(160deg,#2d0a1a,#8b5a6a,#c4909a)"></div><span class="opt-label">Роза</span></div>
-                <div class="option" data-bg="bg-dark"><div class="swatch" style="background:linear-gradient(160deg,#050505,#1a1a1a,#252525)"></div><span class="opt-label">Тьма</span></div>
-                <div class="option" data-bg="bg-light"><div class="swatch" style="background:linear-gradient(160deg,#e8e8e8,#fafafa,#fff)"></div><span class="opt-label">Свет</span></div>
-                <div class="option" data-bg="bg-gold"><div class="swatch" style="background:linear-gradient(160deg,#1a0f00,#8b6914,#d4af37)"></div><span class="opt-label">Золото</span></div>
-                <div class="option" data-bg="bg-lavender"><div class="swatch" style="background:linear-gradient(160deg,#1a0a2e,#8b6baa,#c9b8e8)"></div><span class="opt-label">Лаванда</span></div>
-                <div class="option" data-bg="bg-cherry"><div class="swatch" style="background:linear-gradient(160deg,#1a0a0a,#8b2d2d,#c94b4b)"></div><span class="opt-label">Вишня</span></div>
-                <div class="option" data-bg="bg-mint"><div class="swatch" style="background:linear-gradient(160deg,#0a1a1a,#2d5a5a,#4b8b8b)"></div><span class="opt-label">Мята</span></div>
-                <div class="option" data-bg="bg-sunrise"><div class="swatch" style="background:linear-gradient(160deg,#1a0f00,#c97a2d,#f0c050)"></div><span class="opt-label">Рассвет</span></div>
-            </div>
-        </div>
-
-        <!-- Шрифты -->
-        <div class="section">
-            <div class="section-label">✍️ Шрифт</div>
-            <div class="options" id="fontOptions">
-                <div class="option active" data-font="font-serif"><div class="font-sample" style="font-family:Georgia,serif">A</div><span class="opt-label">Классика</span></div>
-                <div class="option" data-font="font-sans"><div class="font-sample" style="font-family:'Helvetica Neue',sans-serif">A</div><span class="opt-label">Чистый</span></div>
-                <div class="option" data-font="font-hand"><div class="font-sample" style="font-family:'Brush Script MT',cursive">A</div><span class="opt-label">Рукопись</span></div>
-                <div class="option" data-font="font-mono"><div class="font-sample" style="font-family:'Courier New',monospace">A</div><span class="opt-label">Печать</span></div>
-                <div class="option" data-font="font-narrow"><div class="font-sample" style="font-family:'Arial Narrow',sans-serif">A</div><span class="opt-label">Узкий</span></div>
-                <div class="option" data-font="font-wide"><div class="font-sample" style="font-family:'Gill Sans',sans-serif">A</div><span class="opt-label">Широкий</span></div>
-            </div>
-        </div>
-
-        <!-- Размер текста -->
-        <div class="section">
-            <div class="section-label">📏 Размер текста</div>
-            <div class="options" id="sizeOptions">
-                <div class="option" data-size="size-small"><span class="opt-label">S</span></div>
-                <div class="option active" data-size="size-medium"><span class="opt-label">M</span></div>
-                <div class="option" data-size="size-large"><span class="opt-label">L</span></div>
-                <div class="option" data-size="size-xlarge"><span class="opt-label">XL</span></div>
-            </div>
-        </div>
-
-        <!-- Выравнивание -->
-        <div class="section">
-            <div class="section-label">↔️ Выравнивание</div>
-            <div class="options" id="alignOptions">
-                <div class="option" data-align="align-left"><span class="opt-label">←</span></div>
-                <div class="option active" data-align="align-center"><span class="opt-label">↔</span></div>
-                <div class="option" data-align="align-right"><span class="opt-label">→</span></div>
-            </div>
-        </div>
-
-        <!-- Украшения -->
-        <div class="section">
-            <div class="section-label">✨ Украшение</div>
-            <div class="options" id="decorOptions">
-                <div class="option active" data-decor="✧ ✧ ✧"><span class="opt-label">✧</span></div>
-                <div class="option" data-decor="• • •"><span class="opt-label">•</span></div>
-                <div class="option" data-decor="~ ~ ~"><span class="opt-label">~</span></div>
-                <div class="option" data-decor="— ✦ —"><span class="opt-label">✦</span></div>
-                <div class="option" data-decor=""><span class="opt-label">✕</span></div>
-            </div>
-        </div>
-
-        <!-- Стикеры -->
-        <div class="section">
-            <div class="section-label">🪄 Стикер</div>
-            <div class="options" id="stickerOptions">
-                <div class="option" data-sticker=""><span class="opt-label">✕</span></div>
-                <div class="option" data-sticker="🕯"><span class="opt-label">🕯</span></div>
-                <div class="option" data-sticker="🌟"><span class="opt-label">🌟</span></div>
-                <div class="option" data-sticker="💫"><span class="opt-label">💫</span></div>
-                <div class="option" data-sticker="🌙"><span class="opt-label">🌙</span></div>
-                <div class="option" data-sticker="✨"><span class="opt-label">✨</span></div>
-                <div class="option" data-sticker="🖤"><span class="opt-label">🖤</span></div>
-                <div class="option" data-sticker="🔥"><span class="opt-label">🔥</span></div>
-                <div class="option" data-sticker="💔"><span class="opt-label">💔</span></div>
-            </div>
-        </div>
-
-        <!-- Переключатели -->
-        <div class="section">
-            <div class="toggle-row">
-                <span>Кавычки «»</span>
-                <div class="toggle active" id="toggleQuotes" onclick="toggleQuotes()"></div>
-            </div>
-            <div class="toggle-row">
-                <span>Разделитель</span>
-                <div class="toggle active" id="toggleDivider" onclick="toggleDivider()"></div>
-            </div>
-            <div class="toggle-row">
-                <span>Дата</span>
-                <div class="toggle active" id="toggleDate" onclick="toggleDate()"></div>
-            </div>
-        </div>
-
-        <!-- Кнопки -->
-        <div class="buttons">
-            <button class="btn-primary" id="saveBtn">💾 Сохранить</button>
-            <button class="btn-outline" id="shareBtn">📤 Поделиться</button>
-        </div>
-
-        <div class="toast" id="toast"></div>
-        <div class="footer">Строчки - одиночки 🕯</div>
+    <h1>🕯 Строчки - одиночки</h1>
+    
+    <div class="card bg1" id="card">
+        <div class="card-text" id="cardText">Напиши свою строчку...</div>
+        <div class="card-divider"></div>
+        <div class="card-author" id="cardAuthor">— Автор</div>
+        <div class="card-channel">Строчки - одиночки 🕯</div>
     </div>
+    
+    <textarea id="textInput" placeholder="О чём твоя строчка? Пиши..." maxlength="350" rows="3"></textarea>
+    
+    <div class="options">
+        <div class="opt bg1 active" onclick="setBg('bg1', this)"></div>
+        <div class="opt bg2" onclick="setBg('bg2', this)"></div>
+        <div class="opt bg3" onclick="setBg('bg3', this)"></div>
+        <div class="opt bg4" onclick="setBg('bg4', this)"></div>
+        <div class="opt bg5" onclick="setBg('bg5', this)"></div>
+        <div class="opt bg6" onclick="setBg('bg6', this)"></div>
+        <div class="opt bg7" onclick="setBg('bg7', this)"></div>
+        <div class="opt bg8" onclick="setBg('bg8', this)"></div>
+    </div>
+    
+    <button id="saveBtn">💾 Сохранить картинку</button>
+    <div class="status" id="status"></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         const card = document.getElementById('card');
         const cardText = document.getElementById('cardText');
         const cardAuthor = document.getElementById('cardAuthor');
-        const cardDecor = document.getElementById('cardDecor');
-        const cardDate = document.getElementById('cardDate');
-        const cardSticker = document.getElementById('cardSticker');
         const textInput = document.getElementById('textInput');
-        const charCount = document.getElementById('charCount');
-        const toast = document.getElementById('toast');
-
-        let currentBg = 'bg-sunset';
-        let currentFont = 'font-serif';
-        let currentSize = 'size-medium';
-        let currentAlign = 'align-center';
-        let currentDecor = '✧ ✧ ✧';
-        let currentSticker = '';
-        let showQuotes = true;
-        let showDivider = true;
-        let showDate = true;
-
+        const status = document.getElementById('status');
+        
+        const allBg = ['bg1','bg2','bg3','bg4','bg5','bg6','bg7','bg8'];
+        
         if (window.Telegram && window.Telegram.WebApp) {
             const tg = window.Telegram.WebApp;
             const user = tg.initDataUnsafe?.user;
             cardAuthor.textContent = `— ${user?.first_name || 'Автор'}`;
             tg.ready();
         }
-
-        const today = new Date();
-        cardDate.textContent = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
-
-        function showToast(msg) {
-            toast.textContent = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2500);
-        }
-
-        function updateCard() {
-            const text = textInput.value || 'Напиши свою строчку...';
-            cardText.textContent = text;
-            charCount.textContent = textInput.value.length;
-
-            const allBg = ['bg-sunset','bg-night','bg-ocean','bg-forest','bg-rose','bg-dark','bg-light','bg-gold','bg-lavender','bg-cherry','bg-mint','bg-sunrise'];
+        
+        textInput.addEventListener('input', () => {
+            cardText.textContent = textInput.value || 'Напиши свою строчку...';
+        });
+        
+        function setBg(bg, el) {
+            document.querySelectorAll('.opt').forEach(o => o.classList.remove('active'));
+            el.classList.add('active');
             allBg.forEach(b => card.classList.remove(b));
-            card.classList.add(currentBg);
-
-            const allFonts = ['font-serif','font-sans','font-hand','font-mono','font-narrow','font-wide'];
-            allFonts.forEach(f => card.classList.remove(f));
-            card.classList.add(currentFont);
-
-            const allSizes = ['size-small','size-medium','size-large','size-xlarge'];
-            allSizes.forEach(s => card.classList.remove(s));
-            card.classList.add(currentSize);
-
-            const allAligns = ['align-left','align-center','align-right'];
-            allAligns.forEach(a => card.classList.remove(a));
-            card.classList.add(currentAlign);
-
-            cardDecor.textContent = currentDecor;
-
-            if (currentSticker) {
-                cardSticker.style.display = 'block';
-                cardSticker.textContent = currentSticker;
-            } else {
-                cardSticker.style.display = 'none';
-            }
-
-            if (showQuotes) {
-                cardText.classList.remove('no-quotes');
-            } else {
-                cardText.classList.add('no-quotes');
-            }
-
-            document.querySelector('.card-divider').style.display = showDivider ? 'block' : 'none';
-            cardDate.style.display = showDate ? 'block' : 'none';
+            card.classList.add(bg);
         }
 
-        textInput.addEventListener('input', updateCard);
-
-        function setupOptions(containerId, callback) {
-            document.querySelectorAll(`#${containerId} .option`).forEach(opt => {
-                opt.addEventListener('click', () => {
-                    document.querySelectorAll(`#${containerId} .option`).forEach(o => o.classList.remove('active'));
-                    opt.classList.add('active');
-                    callback(opt);
-                    updateCard();
-                });
+        // Загружаем html2canvas
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
             });
         }
 
-        setupOptions('bgOptions', (opt) => { currentBg = opt.dataset.bg; });
-        setupOptions('fontOptions', (opt) => { currentFont = opt.dataset.font; });
-        setupOptions('sizeOptions', (opt) => { currentSize = opt.dataset.size; });
-        setupOptions('alignOptions', (opt) => { currentAlign = opt.dataset.align; });
-        setupOptions('decorOptions', (opt) => { currentDecor = opt.dataset.decor; });
-        setupOptions('stickerOptions', (opt) => { currentSticker = opt.dataset.sticker; });
-
-        function toggleQuotes() {
-            showQuotes = !showQuotes;
-            document.getElementById('toggleQuotes').classList.toggle('active', showQuotes);
-            updateCard();
-        }
-        function toggleDivider() {
-            showDivider = !showDivider;
-            document.getElementById('toggleDivider').classList.toggle('active', showDivider);
-            updateCard();
-        }
-        function toggleDate() {
-            showDate = !showDate;
-            document.getElementById('toggleDate').classList.toggle('active', showDate);
-            updateCard();
-        }
-
-        // Сохранить (работает везде)
         document.getElementById('saveBtn').addEventListener('click', async () => {
             const text = textInput.value.trim();
-            if (!text) { showToast('Напиши строчку ✏️'); return; }
+            if (!text) {
+                status.textContent = 'Напиши строчку ✏️';
+                return;
+            }
 
-            showToast('Создаю картинку...');
-
+            status.textContent = 'Загружаю...';
+            
             try {
-                const canvas = await html2canvas(card, { scale: 2, backgroundColor: null, useCORS: true });
+                // Загружаем html2canvas
+                if (typeof html2canvas === 'undefined') {
+                    await loadScript('https://html2canvas.hertzen.com/dist/html2canvas.min.js');
+                }
+                
+                status.textContent = 'Создаю картинку...';
+                
+                const canvas = await html2canvas(card, {
+                    scale: 2,
+                    backgroundColor: null,
+                    useCORS: true,
+                    allowTaint: true
+                });
+                
+                // Конвертируем в blob и скачиваем
                 canvas.toBlob((blob) => {
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
@@ -394,52 +175,16 @@
                     link.click();
                     document.body.removeChild(link);
                     URL.revokeObjectURL(url);
-                    showToast('💾 Сохранено! Найди в галерее и отправь админу');
+                    
+                    status.textContent = '✅ Сохранено! Отправь админу';
+                    setTimeout(() => { status.textContent = ''; }, 3000);
                 }, 'image/png');
+                
             } catch (err) {
-                showToast('❌ Ошибка. Попробуй ещё раз');
+                console.error(err);
+                status.textContent = '❌ Ошибка. Попробуй ещё раз';
             }
         });
-
-        // Поделиться (на телефоне — системное меню, на ПК — скачивание)
-        document.getElementById('shareBtn').addEventListener('click', async () => {
-            const text = textInput.value.trim();
-            if (!text) { showToast('Напиши строчку ✏️'); return; }
-
-            try {
-                const canvas = await html2canvas(card, { scale: 2, backgroundColor: null, useCORS: true });
-                canvas.toBlob(async (blob) => {
-                    const file = new File([blob], 'strochka.png', { type: 'image/png' });
-
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        try {
-                            await navigator.share({
-                                files: [file],
-                                title: 'Моя строчка',
-                                text: 'Создано в «Строчки - одиночки» 🕯'
-                            });
-                        } catch (e) {
-                            // Пользователь отменил
-                        }
-                    } else {
-                        // Fallback — скачиваем
-                        const url = URL.createObjectURL(blob);
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.download = `strochka_${Date.now()}.png`;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        URL.revokeObjectURL(url);
-                        showToast('💾 Сохранено! Отправь админу');
-                    }
-                }, 'image/png');
-            } catch (err) {
-                showToast('❌ Ошибка');
-            }
-        });
-
-        updateCard();
     </script>
 </body>
 </html>
