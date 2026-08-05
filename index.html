@@ -1,37 +1,516 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тест</title>
-</head>
-<body style="background:#1a1a2e;color:#fff;padding:20px;text-align:center;">
-    <h2>Тест WebApp</h2>
-    <button onclick="send()" style="padding:20px;font-size:20px;background:green;color:white;border:none;border-radius:10px;">
-        Отправить тест
-    </button>
-    <p id="status"></p>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Детектив 13-й участок</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg: #1a1a2e;
+            --panel: #16213e;
+            --accent: #e94560;
+            --gold: #f0c040;
+            --text: #eee;
+            --dim: #888;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--bg);
+            color: var(--text);
+            padding: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .top-bar {
+            background: var(--panel);
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .badge {
+            font-size: 14px;
+            color: var(--gold);
+            font-weight: bold;
+        }
+        
+        .timer {
+            background: #000;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .case-info {
+            padding: 20px;
+            background: var(--panel);
+            margin: 12px;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .case-title {
+            font-size: 20px;
+            color: var(--gold);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .case-desc {
+            color: var(--dim);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: #333;
+            margin: 12px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 4px;
+            padding: 0 12px;
+            margin-bottom: 12px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px;
+            background: var(--panel);
+            border: none;
+            color: var(--dim);
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .tab.active {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .content-area {
+            padding: 0 12px 100px 12px;
+        }
+        
+        .evidence-card {
+            background: var(--panel);
+            padding: 16px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border: 1px solid #333;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .evidence-card:active {
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+        
+        .evidence-card.found {
+            border-color: #4caf50;
+            background: #0a1f0a;
+        }
+        
+        .evidence-card .emoji {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .evidence-card .name {
+            font-weight: bold;
+            color: var(--gold);
+            margin-bottom: 4px;
+        }
+        
+        .evidence-card .desc {
+            font-size: 12px;
+            color: var(--dim);
+        }
+        
+        .suspect-card {
+            background: var(--panel);
+            padding: 16px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            border: 1px solid #333;
+        }
+        
+        .suspect-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .suspect-info {
+            flex: 1;
+        }
+        
+        .suspect-name {
+            font-weight: bold;
+            color: var(--gold);
+        }
+        
+        .suspect-motive {
+            font-size: 12px;
+            color: var(--dim);
+            margin-top: 4px;
+        }
+        
+        .interrogate-btn {
+            padding: 10px 16px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+        }
+        
+        .interrogate-btn:active {
+            opacity: 0.7;
+        }
+        
+        .connections {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .connection-line {
+            background: var(--panel);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px dashed var(--gold);
+            color: var(--dim);
+            font-size: 12px;
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+        }
+        
+        .action-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px;
+            background: linear-gradient(transparent, var(--bg) 20%);
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 16px;
+            border: 2px solid var(--accent);
+            background: transparent;
+            color: var(--accent);
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .action-btn:active {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .action-btn.primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--panel);
+            color: var(--gold);
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: 1px solid var(--gold);
+            z-index: 100;
+            animation: slideDown 0.3s ease;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        @keyframes slideDown {
+            from {
+                transform: translateX(-50%) translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="badge">🕵️ ДЕТЕКТИВ #1337</div>
+        <div class="timer" id="timer">23:59</div>
+    </div>
+    
+    <div class="case-info" id="case-info">
+        <div class="case-title">Дело #42: «КРАСНАЯ КОМНАТА»</div>
+        <div class="case-desc">Миллионер найден мёртвым в запертой комнате. 4 подозреваемых. 6 улик. Время пошло.</div>
+    </div>
+    
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress" style="width: 0%"></div>
+    </div>
+    
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('evidence')">🔍 Улики</button>
+        <button class="tab" onclick="switchTab('suspects')">👤 Подозреваемые</button>
+        <button class="tab" onclick="switchTab('connections')">🧩 Связи</button>
+    </div>
+    
+    <div class="content-area" id="content"></div>
+    
+    <div class="action-buttons">
+        <button class="action-btn" onclick="requestHint()">💡 Подсказка</button>
+        <button class="action-btn primary" onclick="makeAccusation()">⚖️ Обвинить</button>
+    </div>
+    
     <script>
         const tg = window.Telegram.WebApp;
-        document.getElementById('status').textContent = 'API: ' + (tg ? 'OK' : 'ERROR');
-
-        function send() {
-            if (!tg) {
-                alert('Telegram API не загружен');
-                return;
+        let timeLeft = 1440;
+        let currentTab = 'evidence';
+        
+        const caseData = {
+            evidence: [
+                { id: 'e1', emoji: '🗡️', name: 'Нож с гравировкой', desc: 'Орудие убийства. Инициалы "M.D."', found: false },
+                { id: 'e2', emoji: '🧪', name: 'Стакан с ядом', desc: 'Цианид. Следы помады.', found: false },
+                { id: 'e3', emoji: '📝', name: 'Предсмертная записка', desc: '"Она знала..." Почерк подделан.', found: false },
+                { id: 'e4', emoji: '🔑', name: 'Ключ от комнаты', desc: 'Единственный экземпляр. В кармане жертвы.', found: true },
+                { id: 'e5', emoji: '💍', name: 'Обручальное кольцо', desc: 'Не принадлежит жене. Гравировка внутри.', found: false },
+                { id: 'e6', emoji: '📱', name: 'Телефон жертвы', desc: 'Удалены все сообщения за сегодня.', found: false }
+            ],
+            suspects: [
+                { id: 's1', emoji: '👩‍🦰', name: 'Мария Дарк', role: 'Жена', motive: 'Измена. Страховка на $10M.' },
+                { id: 's2', emoji: '👨‍💼', name: 'Виктор Стоун', role: 'Партнёр', motive: 'Финансовые махинации.' },
+                { id: 's3', emoji: '👩‍🔬', name: 'Елена Вайт', role: 'Химик', motive: 'Имела доступ к ядам.' },
+                { id: 's4', emoji: '👨‍🎨', name: 'Марко Дрейк', role: 'Художник', motive: 'Долг $500k. Шантаж.' }
+            ],
+            connections: []
+        };
+        
+        tg.ready();
+        tg.expand();
+        
+        // Настройка цвета
+        document.documentElement.style.setProperty('--bg', tg.themeParams.bg_color || '#1a1a2e');
+        document.documentElement.style.setProperty('--panel', tg.themeParams.secondary_bg_color || '#16213e');
+        document.documentElement.style.setProperty('--text', tg.themeParams.text_color || '#eee');
+        
+        function showToast(text) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = text;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    toast.remove();
+                }
+            }, 2000);
+        }
+        
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            renderContent();
+        }
+        
+        function renderContent() {
+            const content = document.getElementById('content');
+            
+            if (currentTab === 'evidence') {
+                content.innerHTML = caseData.evidence.map(e => `
+                    <div class="evidence-card ${e.found ? 'found' : ''}" onclick="examineEvidence('${e.id}')">
+                        <div class="emoji">${e.emoji}</div>
+                        <div class="name">${e.name} ${e.found ? '✅' : '🔒'}</div>
+                        <div class="desc">${e.found ? e.desc : 'Ещё не найдена...'}</div>
+                    </div>
+                `).join('');
+            } else if (currentTab === 'suspects') {
+                content.innerHTML = caseData.suspects.map(s => `
+                    <div class="suspect-card">
+                        <div class="suspect-avatar">${s.emoji}</div>
+                        <div class="suspect-info">
+                            <div class="suspect-name">${s.name}</div>
+                            <div style="color: var(--dim); font-size: 12px;">${s.role}</div>
+                            <div class="suspect-motive">Мотив: ${s.motive}</div>
+                        </div>
+                        <button class="interrogate-btn" onclick="interrogate('${s.id}')">ДОПРОС</button>
+                    </div>
+                `).join('');
+            } else if (currentTab === 'connections') {
+                content.innerHTML = '<div class="connections">' + 
+                    caseData.connections.map(c => `
+                        <div class="connection-line">${c}</div>
+                    `).join('') + 
+                    (caseData.connections.length === 0 ? '<p style="text-align:center;color:var(--dim);padding:40px;">Пока нет связей. Найдите больше улик!</p>' : '') +
+                    '</div>';
             }
-            document.getElementById('status').textContent = 'Отправка...';
+        }
+        
+        function examineEvidence(id) {
+            const evidence = caseData.evidence.find(e => e.id === id);
+            if (!evidence.found) {
+                evidence.found = true;
+                caseData.connections.push(`${evidence.emoji} → ${evidence.name}: найдено!`);
+                updateProgress();
+                renderContent();
+                tg.HapticFeedback.notificationOccurred('success');
+                showToast('✅ Улика найдена!');
+                
+                // Отправляем данные боту (НЕ закрывает Web App)
+                tg.sendData(JSON.stringify({
+                    action: 'found_evidence',
+                    evidence: evidence,
+                    progress: getProgress()
+                }));
+            } else {
+                showToast('Эта улика уже найдена');
+            }
+        }
+        
+        function interrogate(id) {
+            const suspect = caseData.suspects.find(s => s.id === id);
+            tg.HapticFeedback.impactOccurred('heavy');
+            showToast(`Допрос ${suspect.name}...`);
+            
+            // Отправляем запрос на допрос (закроет Web App)
+            tg.sendData(JSON.stringify({
+                action: 'interrogate',
+                suspect: suspect
+            }));
+        }
+        
+        function requestHint() {
+            tg.HapticFeedback.impactOccurred('medium');
+            showToast('💡 Запрос подсказки отправлен!');
             
             tg.sendData(JSON.stringify({
-                action: 'test',
-                text: 'Привет из WebApp!',
-                time: new Date().toISOString()
+                action: 'request_hint',
+                progress: getProgress()
+            }));
+        }
+        
+        function makeAccusation() {
+            const suspects = caseData.suspects.map(s => ({
+                id: s.id,
+                name: s.name,
+                emoji: s.emoji
             }));
             
-            document.getElementById('status').textContent = 'Отправлено! Проверь консоль бота';
+            tg.HapticFeedback.impactOccurred('heavy');
+            showToast('⚖️ Выберите убийцу в чате с ботом!');
+            
+            tg.sendData(JSON.stringify({
+                action: 'accusation',
+                suspects: suspects
+            }));
         }
+        
+        function updateProgress() {
+            const found = caseData.evidence.filter(e => e.found).length;
+            const total = caseData.evidence.length;
+            const percent = (found / total) * 100;
+            document.getElementById('progress').style.width = percent + '%';
+        }
+        
+        function getProgress() {
+            const found = caseData.evidence.filter(e => e.found).length;
+            const total = caseData.evidence.length;
+            return Math.round((found / total) * 100);
+        }
+        
+        // Таймер
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            if (timeLeft > 0) {
+                timeLeft--;
+            }
+        }
+        
+        setInterval(updateTimer, 1000);
+        updateProgress();
+        renderContent();
+        
+        // Главная кнопка Telegram
+        tg.MainButton.setText('📋 ОТПРАВИТЬ ОТЧЁТ');
+        tg.MainButton.show();
+        tg.MainButton.onClick(() => {
+            tg.sendData(JSON.stringify({
+                action: 'report',
+                evidence: caseData.evidence,
+                progress: getProgress()
+            }));
+        });
     </script>
 </body>
 </html>
