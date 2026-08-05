@@ -12,31 +12,16 @@
             color: #e0e0e0;
             min-height: 100vh;
             padding: 16px;
-            padding-bottom: 120px;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            padding-bottom: 100px;
         }
         .container { max-width: 480px; margin: 0 auto; }
 
-        .header { text-align: center; margin-bottom: 16px; }
-        .header .icon { font-size: 48px; display: block; margin-bottom: 8px; animation: flicker 3s infinite; }
-        @keyframes flicker { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .header { text-align: center; margin-bottom: 20px; }
+        .header .icon { font-size: 48px; display: block; margin-bottom: 8px; }
         .header h1 { font-size: 22px; background: linear-gradient(135deg, #feca57, #ff9ff3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .header p { color: #666; font-size: 13px; margin-top: 4px; }
 
-        /* Табы */
-        .tabs { display: flex; gap: 4px; margin-bottom: 16px; background: #1a1a2e; border-radius: 12px; padding: 4px; }
-        .tab { flex: 1; padding: 10px 8px; text-align: center; border-radius: 10px; font-size: 13px; cursor: pointer; transition: all 0.2s; color: #888; border: none; background: transparent; }
-        .tab.active { background: #16213e; color: #feca57; }
-        .tab .tab-emoji { display: block; font-size: 18px; margin-bottom: 2px; }
-        .panel { display: none; }
-        .panel.active { display: block; }
-
-        /* Предпросмотр */
-        .preview { margin-bottom: 12px; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.4); transition: all 0.3s; }
-        .preview.bordered { border: 4px solid rgba(255,255,255,0.1); }
-        .preview.shadowed { box-shadow: 0 16px 48px rgba(0,0,0,0.6); }
-        .preview.rounded { border-radius: 24px; }
+        .preview { margin-bottom: 16px; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
         .card {
             aspect-ratio: 3/4;
             padding: 40px 28px;
@@ -48,20 +33,20 @@
             position: relative;
             transition: all 0.3s ease;
         }
-        .card-decoration { position: absolute; top: 20px; font-size: 12px; opacity: 0.4; letter-spacing: 4px; }
-        .card-text { font-size: 26px; line-height: 1.5; margin-bottom: 16px; word-break: break-word; z-index: 1; font-style: italic; }
+        .card-text {
+            font-size: 26px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            word-break: break-word;
+            z-index: 1;
+            font-style: italic;
+        }
         .card-text::before { content: '«'; }
         .card-text::after { content: '»'; }
-        .card-text.no-quotes::before, .card-text.no-quotes::after { content: ''; }
         .card-divider { width: 40px; height: 2px; background: currentColor; opacity: 0.4; margin-bottom: 16px; }
         .card-author { font-size: 14px; opacity: 0.7; z-index: 1; }
         .card-channel { position: absolute; bottom: 20px; font-size: 11px; opacity: 0.4; z-index: 1; }
-        .card-date { position: absolute; top: 20px; right: 24px; font-size: 10px; opacity: 0.3; z-index: 1; writing-mode: vertical-rl; }
-        
-        /* Стикер на карточке */
-        .card-sticker { position: absolute; bottom: 60px; right: 24px; font-size: 32px; opacity: 0.6; z-index: 1; }
 
-        /* Фоны */
         .bg-sunset { background: linear-gradient(160deg, #1a0a2e, #5b2c56, #c94b4b, #f0a050); color: #fff; }
         .bg-night { background: linear-gradient(160deg, #0a0a1a, #16213e, #1a1a3e, #2d1b69); color: #c8c8e8; }
         .bg-ocean { background: linear-gradient(160deg, #0c1b33, #1b3a4b, #26547c, #4299e1); color: #e0f0ff; }
@@ -75,23 +60,19 @@
         .bg-mint { background: linear-gradient(160deg, #0a1a1a, #1a3a3a, #2d5a5a, #4b8b8b); color: #e0f8f8; }
         .bg-sunrise { background: linear-gradient(160deg, #1a0f00, #5c3a1a, #c97a2d, #f0c050); color: #fff8e8; }
 
-        /* Шрифты */
-        .card.font-serif .card-text { font-family: Georgia, 'Times New Roman', serif; }
+        .card.font-serif .card-text { font-family: Georgia, serif; }
         .card.font-sans .card-text { font-family: 'Helvetica Neue', Arial, sans-serif; font-style: normal; }
         .card.font-hand .card-text { font-family: 'Brush Script MT', cursive; font-size: 30px; }
         .card.font-mono .card-text { font-family: 'Courier New', monospace; font-style: normal; font-size: 22px; }
         .card.font-narrow .card-text { font-family: 'Arial Narrow', sans-serif; font-style: normal; font-size: 24px; letter-spacing: 1px; }
         .card.font-wide .card-text { font-family: 'Gill Sans', sans-serif; font-size: 28px; letter-spacing: 2px; }
 
-        /* Размер текста */
         .card.size-small .card-text { font-size: 20px; }
         .card.size-medium .card-text { font-size: 26px; }
         .card.size-large .card-text { font-size: 32px; }
         .card.size-xlarge .card-text { font-size: 38px; }
 
-        /* Выравнивание */
         .card.align-left { text-align: left; align-items: flex-start; padding: 40px 28px; }
-        .card.align-left .card-text { padding-left: 0; }
         .card.align-center { text-align: center; align-items: center; }
         .card.align-right { text-align: right; align-items: flex-end; padding: 40px 28px; }
 
@@ -118,39 +99,6 @@
         .option .font-sample { font-size: 24px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: #16213e; color: #e0e0e0; }
         .option .opt-label { font-size: 10px; color: #888; }
 
-        /* Промпты */
-        .prompt-card { background: #1a1a2e; border-radius: 14px; padding: 20px; text-align: center; margin-bottom: 16px; }
-        .prompt-text { font-size: 18px; font-style: italic; margin-bottom: 12px; color: #ccc; }
-        .prompt-btn {
-            padding: 8px 20px; border-radius: 20px; background: #16213e; color: #feca57;
-            border: none; cursor: pointer; font-size: 14px; transition: all 0.2s;
-        }
-
-        /* История */
-        .history-item {
-            display: flex; gap: 12px; align-items: center; padding: 12px;
-            background: #1a1a2e; border-radius: 12px; margin-bottom: 8px; cursor: pointer;
-        }
-        .history-item:active { background: #16213e; }
-        .history-thumb {
-            width: 48px; height: 64px; border-radius: 8px; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center; font-size: 20px;
-        }
-        .history-text { flex: 1; font-size: 13px; color: #aaa; }
-        .history-text .ht-title { color: #e0e0e0; font-size: 14px; margin-bottom: 2px; }
-        .history-empty { text-align: center; padding: 40px 20px; color: #555; }
-
-        .buttons { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
-        button {
-            flex: 1; min-width: 100px; padding: 14px 12px; border: none; border-radius: 14px;
-            font-size: 14px; cursor: pointer; transition: all 0.2s; font-weight: 600;
-        }
-        button:active { transform: scale(0.97); }
-        .btn-primary { background: linear-gradient(135deg, #feca57, #ff9ff3); color: #1a1a2e; }
-        .btn-outline { background: transparent; border: 2px solid #333; color: #e0e0e0; }
-        .btn-small { padding: 8px 12px; font-size: 12px; min-width: auto; flex: 0; }
-
-        /* Переключатели */
         .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
         .toggle-row span { font-size: 14px; }
         .toggle {
@@ -164,6 +112,15 @@
         }
         .toggle.active::after { left: 22px; }
 
+        .buttons { display: flex; gap: 8px; margin-top: 20px; }
+        button {
+            flex: 1; padding: 14px; border: none; border-radius: 14px;
+            font-size: 15px; cursor: pointer; transition: all 0.2s; font-weight: 600;
+        }
+        button:active { transform: scale(0.97); }
+        .btn-primary { background: linear-gradient(135deg, #feca57, #ff9ff3); color: #1a1a2e; }
+        .btn-outline { background: transparent; border: 2px solid #333; color: #e0e0e0; }
+
         .toast {
             position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
             background: #2a2a3e; color: #e0e0e0; padding: 12px 24px; border-radius: 30px;
@@ -171,6 +128,7 @@
             pointer-events: none; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
         .toast.show { opacity: 1; }
+        
         .footer { text-align: center; padding: 20px; color: #444; font-size: 11px; }
     </style>
 </head>
@@ -182,156 +140,122 @@
             <p>Создай красивую карточку</p>
         </div>
 
-        <!-- Табы -->
-        <div class="tabs">
-            <button class="tab active" data-panel="editor"><span class="tab-emoji">🎨</span>Редактор</button>
-            <button class="tab" data-panel="prompts"><span class="tab-emoji">💡</span>Идеи</button>
-            <button class="tab" data-panel="history"><span class="tab-emoji">📋</span>История</button>
-        </div>
-
-        <!-- Панель редактора -->
-        <div class="panel active" id="panel-editor">
-            <div class="preview" id="previewWrap">
-                <div class="card bg-sunset font-serif size-medium align-center" id="card">
-                    <div class="card-decoration" id="cardDecor">✧ ✧ ✧</div>
-                    <div class="card-date" id="cardDate"></div>
-                    <div class="card-sticker" id="cardSticker" style="display:none"></div>
-                    <div class="card-text" id="cardText">Напиши свою строчку...</div>
-                    <div class="card-divider"></div>
-                    <div class="card-author" id="cardAuthor">— Автор</div>
-                    <div class="card-channel">Строчки - одиночки 🕯</div>
-                </div>
-            </div>
-
-            <textarea id="textInput" placeholder="О чём твоя строчка? Пиши..." maxlength="350" rows="3"></textarea>
-            <div class="char-count"><span id="charCount">0</span>/350</div>
-
-            <!-- Фоны -->
-            <div class="section">
-                <div class="section-label">🎨 Фон</div>
-                <div class="options" id="bgOptions">
-                    <div class="option active" data-bg="bg-sunset"><div class="swatch" style="background:linear-gradient(160deg,#1a0a2e,#c94b4b,#f0a050)"></div><span class="opt-label">Закат</span></div>
-                    <div class="option" data-bg="bg-night"><div class="swatch" style="background:linear-gradient(160deg,#0a0a1a,#1a1a3e,#2d1b69)"></div><span class="opt-label">Ночь</span></div>
-                    <div class="option" data-bg="bg-ocean"><div class="swatch" style="background:linear-gradient(160deg,#0c1b33,#26547c,#4299e1)"></div><span class="opt-label">Океан</span></div>
-                    <div class="option" data-bg="bg-forest"><div class="swatch" style="background:linear-gradient(160deg,#0d1f0d,#2d5a2d,#4a7c4a)"></div><span class="opt-label">Лес</span></div>
-                    <div class="option" data-bg="bg-rose"><div class="swatch" style="background:linear-gradient(160deg,#2d0a1a,#8b5a6a,#c4909a)"></div><span class="opt-label">Роза</span></div>
-                    <div class="option" data-bg="bg-dark"><div class="swatch" style="background:linear-gradient(160deg,#050505,#1a1a1a,#252525)"></div><span class="opt-label">Тьма</span></div>
-                    <div class="option" data-bg="bg-light"><div class="swatch" style="background:linear-gradient(160deg,#e8e8e8,#fafafa,#fff)"></div><span class="opt-label">Свет</span></div>
-                    <div class="option" data-bg="bg-gold"><div class="swatch" style="background:linear-gradient(160deg,#1a0f00,#8b6914,#d4af37)"></div><span class="opt-label">Золото</span></div>
-                    <div class="option" data-bg="bg-lavender"><div class="swatch" style="background:linear-gradient(160deg,#1a0a2e,#8b6baa,#c9b8e8)"></div><span class="opt-label">Лаванда</span></div>
-                    <div class="option" data-bg="bg-cherry"><div class="swatch" style="background:linear-gradient(160deg,#1a0a0a,#8b2d2d,#c94b4b)"></div><span class="opt-label">Вишня</span></div>
-                    <div class="option" data-bg="bg-mint"><div class="swatch" style="background:linear-gradient(160deg,#0a1a1a,#2d5a5a,#4b8b8b)"></div><span class="opt-label">Мята</span></div>
-                    <div class="option" data-bg="bg-sunrise"><div class="swatch" style="background:linear-gradient(160deg,#1a0f00,#c97a2d,#f0c050)"></div><span class="opt-label">Рассвет</span></div>
-                </div>
-            </div>
-
-            <!-- Шрифты -->
-            <div class="section">
-                <div class="section-label">✍️ Шрифт</div>
-                <div class="options" id="fontOptions">
-                    <div class="option active" data-font="font-serif"><div class="font-sample" style="font-family:Georgia,serif">A</div><span class="opt-label">Классика</span></div>
-                    <div class="option" data-font="font-sans"><div class="font-sample" style="font-family:'Helvetica Neue',sans-serif">A</div><span class="opt-label">Чистый</span></div>
-                    <div class="option" data-font="font-hand"><div class="font-sample" style="font-family:'Brush Script MT',cursive">A</div><span class="opt-label">Рукопись</span></div>
-                    <div class="option" data-font="font-mono"><div class="font-sample" style="font-family:'Courier New',monospace">A</div><span class="opt-label">Печать</span></div>
-                    <div class="option" data-font="font-narrow"><div class="font-sample" style="font-family:'Arial Narrow',sans-serif">A</div><span class="opt-label">Узкий</span></div>
-                    <div class="option" data-font="font-wide"><div class="font-sample" style="font-family:'Gill Sans',sans-serif">A</div><span class="opt-label">Широкий</span></div>
-                </div>
-            </div>
-
-            <!-- Размер текста -->
-            <div class="section">
-                <div class="section-label">📏 Размер текста</div>
-                <div class="options" id="sizeOptions">
-                    <div class="option" data-size="size-small"><span class="opt-label">S</span></div>
-                    <div class="option active" data-size="size-medium"><span class="opt-label">M</span></div>
-                    <div class="option" data-size="size-large"><span class="opt-label">L</span></div>
-                    <div class="option" data-size="size-xlarge"><span class="opt-label">XL</span></div>
-                </div>
-            </div>
-
-            <!-- Выравнивание -->
-            <div class="section">
-                <div class="section-label">↔️ Выравнивание</div>
-                <div class="options" id="alignOptions">
-                    <div class="option" data-align="align-left"><span class="opt-label">←</span></div>
-                    <div class="option active" data-align="align-center"><span class="opt-label">↔</span></div>
-                    <div class="option" data-align="align-right"><span class="opt-label">→</span></div>
-                </div>
-            </div>
-
-            <!-- Украшения -->
-            <div class="section">
-                <div class="section-label">✨ Украшение</div>
-                <div class="options" id="decorOptions">
-                    <div class="option active" data-decor="✧ ✧ ✧"><span class="opt-label">✧</span></div>
-                    <div class="option" data-decor="• • •"><span class="opt-label">•</span></div>
-                    <div class="option" data-decor="~ ~ ~"><span class="opt-label">~</span></div>
-                    <div class="option" data-decor="— ✦ —"><span class="opt-label">✦</span></div>
-                    <div class="option" data-decor=""><span class="opt-label">✕</span></div>
-                </div>
-            </div>
-
-            <!-- Стикеры -->
-            <div class="section">
-                <div class="section-label">🪄 Стикер</div>
-                <div class="options" id="stickerOptions">
-                    <div class="option" data-sticker=""><span class="opt-label">✕</span></div>
-                    <div class="option" data-sticker="🕯"><span class="opt-label">🕯</span></div>
-                    <div class="option" data-sticker="🌟"><span class="opt-label">🌟</span></div>
-                    <div class="option" data-sticker="💫"><span class="opt-label">💫</span></div>
-                    <div class="option" data-sticker="🌙"><span class="opt-label">🌙</span></div>
-                    <div class="option" data-sticker="✨"><span class="opt-label">✨</span></div>
-                    <div class="option" data-sticker="🖤"><span class="opt-label">🖤</span></div>
-                    <div class="option" data-sticker="🔥"><span class="opt-label">🔥</span></div>
-                    <div class="option" data-sticker="💔"><span class="opt-label">💔</span></div>
-                </div>
-            </div>
-
-            <!-- Переключатели -->
-            <div class="section">
-                <div class="toggle-row">
-                    <span>Кавычки «»</span>
-                    <div class="toggle active" id="toggleQuotes" onclick="toggleQuotes()"></div>
-                </div>
-                <div class="toggle-row">
-                    <span>Разделитель</span>
-                    <div class="toggle active" id="toggleDivider" onclick="toggleDivider()"></div>
-                </div>
-                <div class="toggle-row">
-                    <span>Дата</span>
-                    <div class="toggle active" id="toggleDate" onclick="toggleDate()"></div>
-                </div>
-            </div>
-
-            <!-- Кнопки -->
-            <div class="buttons">
-                <button class="btn-primary" id="saveBtn">💾 Сохранить</button>
-                <button class="btn-outline" id="shareBtn">📤 Поделиться</button>
+        <div class="preview" id="previewWrap">
+            <div class="card bg-sunset font-serif size-medium align-center" id="card">
+                <div class="card-decoration" id="cardDecor">✧ ✧ ✧</div>
+                <div class="card-date" id="cardDate"></div>
+                <div class="card-sticker" id="cardSticker" style="display:none"></div>
+                <div class="card-text" id="cardText">Напиши свою строчку...</div>
+                <div class="card-divider"></div>
+                <div class="card-author" id="cardAuthor">— Автор</div>
+                <div class="card-channel">Строчки - одиночки 🕯</div>
             </div>
         </div>
 
-        <!-- Панель идей -->
-        <div class="panel" id="panel-prompts">
-            <div class="prompt-card">
-                <div class="prompt-text" id="promptText">Загрузка...</div>
-                <button class="prompt-btn" id="newPromptBtn">🎲 Другая тема</button>
-            </div>
-            <div class="section-label" style="margin-top:16px;">📝 Популярные темы</div>
-            <div class="options" id="topicOptions" style="margin-top:8px">
-                <div class="option" data-topic="любовь"><span class="opt-label">💔 Любовь</span></div>
-                <div class="option" data-topic="одиночество"><span class="opt-label">🌧 Одиночество</span></div>
-                <div class="option" data-topic="ночь"><span class="opt-label">🌙 Ночь</span></div>
-                <div class="option" data-topic="надежда"><span class="opt-label">🌟 Надежда</span></div>
-                <div class="option" data-topic="тишина"><span class="opt-label">🤫 Тишина</span></div>
-                <div class="option" data-topic="осень"><span class="opt-label">🍂 Осень</span></div>
-                <div class="option" data-topic="память"><span class="opt-label">📷 Память</span></div>
-                <div class="option" data-topic="свобода"><span class="opt-label">🕊 Свобода</span></div>
+        <textarea id="textInput" placeholder="О чём твоя строчка? Пиши..." maxlength="350" rows="3"></textarea>
+        <div class="char-count"><span id="charCount">0</span>/350</div>
+
+        <!-- Фоны -->
+        <div class="section">
+            <div class="section-label">🎨 Фон</div>
+            <div class="options" id="bgOptions">
+                <div class="option active" data-bg="bg-sunset"><div class="swatch" style="background:linear-gradient(160deg,#1a0a2e,#c94b4b,#f0a050)"></div><span class="opt-label">Закат</span></div>
+                <div class="option" data-bg="bg-night"><div class="swatch" style="background:linear-gradient(160deg,#0a0a1a,#1a1a3e,#2d1b69)"></div><span class="opt-label">Ночь</span></div>
+                <div class="option" data-bg="bg-ocean"><div class="swatch" style="background:linear-gradient(160deg,#0c1b33,#26547c,#4299e1)"></div><span class="opt-label">Океан</span></div>
+                <div class="option" data-bg="bg-forest"><div class="swatch" style="background:linear-gradient(160deg,#0d1f0d,#2d5a2d,#4a7c4a)"></div><span class="opt-label">Лес</span></div>
+                <div class="option" data-bg="bg-rose"><div class="swatch" style="background:linear-gradient(160deg,#2d0a1a,#8b5a6a,#c4909a)"></div><span class="opt-label">Роза</span></div>
+                <div class="option" data-bg="bg-dark"><div class="swatch" style="background:linear-gradient(160deg,#050505,#1a1a1a,#252525)"></div><span class="opt-label">Тьма</span></div>
+                <div class="option" data-bg="bg-light"><div class="swatch" style="background:linear-gradient(160deg,#e8e8e8,#fafafa,#fff)"></div><span class="opt-label">Свет</span></div>
+                <div class="option" data-bg="bg-gold"><div class="swatch" style="background:linear-gradient(160deg,#1a0f00,#8b6914,#d4af37)"></div><span class="opt-label">Золото</span></div>
+                <div class="option" data-bg="bg-lavender"><div class="swatch" style="background:linear-gradient(160deg,#1a0a2e,#8b6baa,#c9b8e8)"></div><span class="opt-label">Лаванда</span></div>
+                <div class="option" data-bg="bg-cherry"><div class="swatch" style="background:linear-gradient(160deg,#1a0a0a,#8b2d2d,#c94b4b)"></div><span class="opt-label">Вишня</span></div>
+                <div class="option" data-bg="bg-mint"><div class="swatch" style="background:linear-gradient(160deg,#0a1a1a,#2d5a5a,#4b8b8b)"></div><span class="opt-label">Мята</span></div>
+                <div class="option" data-bg="bg-sunrise"><div class="swatch" style="background:linear-gradient(160deg,#1a0f00,#c97a2d,#f0c050)"></div><span class="opt-label">Рассвет</span></div>
             </div>
         </div>
 
-        <!-- Панель истории -->
-        <div class="panel" id="panel-history">
-            <div id="historyList"></div>
+        <!-- Шрифты -->
+        <div class="section">
+            <div class="section-label">✍️ Шрифт</div>
+            <div class="options" id="fontOptions">
+                <div class="option active" data-font="font-serif"><div class="font-sample" style="font-family:Georgia,serif">A</div><span class="opt-label">Классика</span></div>
+                <div class="option" data-font="font-sans"><div class="font-sample" style="font-family:'Helvetica Neue',sans-serif">A</div><span class="opt-label">Чистый</span></div>
+                <div class="option" data-font="font-hand"><div class="font-sample" style="font-family:'Brush Script MT',cursive">A</div><span class="opt-label">Рукопись</span></div>
+                <div class="option" data-font="font-mono"><div class="font-sample" style="font-family:'Courier New',monospace">A</div><span class="opt-label">Печать</span></div>
+                <div class="option" data-font="font-narrow"><div class="font-sample" style="font-family:'Arial Narrow',sans-serif">A</div><span class="opt-label">Узкий</span></div>
+                <div class="option" data-font="font-wide"><div class="font-sample" style="font-family:'Gill Sans',sans-serif">A</div><span class="opt-label">Широкий</span></div>
+            </div>
+        </div>
+
+        <!-- Размер текста -->
+        <div class="section">
+            <div class="section-label">📏 Размер текста</div>
+            <div class="options" id="sizeOptions">
+                <div class="option" data-size="size-small"><span class="opt-label">S</span></div>
+                <div class="option active" data-size="size-medium"><span class="opt-label">M</span></div>
+                <div class="option" data-size="size-large"><span class="opt-label">L</span></div>
+                <div class="option" data-size="size-xlarge"><span class="opt-label">XL</span></div>
+            </div>
+        </div>
+
+        <!-- Выравнивание -->
+        <div class="section">
+            <div class="section-label">↔️ Выравнивание</div>
+            <div class="options" id="alignOptions">
+                <div class="option" data-align="align-left"><span class="opt-label">←</span></div>
+                <div class="option active" data-align="align-center"><span class="opt-label">↔</span></div>
+                <div class="option" data-align="align-right"><span class="opt-label">→</span></div>
+            </div>
+        </div>
+
+        <!-- Украшения -->
+        <div class="section">
+            <div class="section-label">✨ Украшение</div>
+            <div class="options" id="decorOptions">
+                <div class="option active" data-decor="✧ ✧ ✧"><span class="opt-label">✧</span></div>
+                <div class="option" data-decor="• • •"><span class="opt-label">•</span></div>
+                <div class="option" data-decor="~ ~ ~"><span class="opt-label">~</span></div>
+                <div class="option" data-decor="— ✦ —"><span class="opt-label">✦</span></div>
+                <div class="option" data-decor=""><span class="opt-label">✕</span></div>
+            </div>
+        </div>
+
+        <!-- Стикеры -->
+        <div class="section">
+            <div class="section-label">🪄 Стикер</div>
+            <div class="options" id="stickerOptions">
+                <div class="option" data-sticker=""><span class="opt-label">✕</span></div>
+                <div class="option" data-sticker="🕯"><span class="opt-label">🕯</span></div>
+                <div class="option" data-sticker="🌟"><span class="opt-label">🌟</span></div>
+                <div class="option" data-sticker="💫"><span class="opt-label">💫</span></div>
+                <div class="option" data-sticker="🌙"><span class="opt-label">🌙</span></div>
+                <div class="option" data-sticker="✨"><span class="opt-label">✨</span></div>
+                <div class="option" data-sticker="🖤"><span class="opt-label">🖤</span></div>
+                <div class="option" data-sticker="🔥"><span class="opt-label">🔥</span></div>
+                <div class="option" data-sticker="💔"><span class="opt-label">💔</span></div>
+            </div>
+        </div>
+
+        <!-- Переключатели -->
+        <div class="section">
+            <div class="toggle-row">
+                <span>Кавычки «»</span>
+                <div class="toggle active" id="toggleQuotes" onclick="toggleQuotes()"></div>
+            </div>
+            <div class="toggle-row">
+                <span>Разделитель</span>
+                <div class="toggle active" id="toggleDivider" onclick="toggleDivider()"></div>
+            </div>
+            <div class="toggle-row">
+                <span>Дата</span>
+                <div class="toggle active" id="toggleDate" onclick="toggleDate()"></div>
+            </div>
+        </div>
+
+        <!-- Кнопки -->
+        <div class="buttons">
+            <button class="btn-primary" id="saveBtn">💾 Сохранить</button>
+            <button class="btn-outline" id="shareBtn">📤 Поделиться</button>
         </div>
 
         <div class="toast" id="toast"></div>
@@ -346,11 +270,9 @@
         const cardDecor = document.getElementById('cardDecor');
         const cardDate = document.getElementById('cardDate');
         const cardSticker = document.getElementById('cardSticker');
-        const previewWrap = document.getElementById('previewWrap');
         const textInput = document.getElementById('textInput');
         const charCount = document.getElementById('charCount');
         const toast = document.getElementById('toast');
-        const promptText = document.getElementById('promptText');
 
         let currentBg = 'bg-sunset';
         let currentFont = 'font-serif';
@@ -361,26 +283,7 @@
         let showQuotes = true;
         let showDivider = true;
         let showDate = true;
-        let history = JSON.parse(localStorage.getItem('candle_history') || '[]');
 
-        const prompts = [
-            "Что ты чувствуешь прямо сейчас?",
-            "Опиши момент, который хотел бы запомнить навсегда",
-            "Напиши послание тому, кого больше нет рядом",
-            "Что бы ты сказал себе десять лет назад?",
-            "Одна фраза, которая изменила твою жизнь",
-            "Самое красивое, что ты видел в этом месяце",
-            "Напиши о тишине",
-            "Что для тебя значит свобода?",
-            "Опиши свой идеальный день",
-            "Строчка, которую ты никогда никому не говорил",
-            "Что ты хочешь услышать прямо сейчас?",
-            "Момент, когда всё изменилось",
-            "Письмо в будущее",
-            "Самое тёплое воспоминание этого года"
-        ];
-
-        // Инициализация
         if (window.Telegram && window.Telegram.WebApp) {
             const tg = window.Telegram.WebApp;
             const user = tg.initDataUnsafe?.user;
@@ -391,17 +294,10 @@
         const today = new Date();
         cardDate.textContent = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
 
-        function randomPrompt() {
-            const p = prompts[Math.floor(Math.random() * prompts.length)];
-            promptText.textContent = `«${p}»`;
-            textInput.placeholder = p;
-        }
-        randomPrompt();
-
         function showToast(msg) {
             toast.textContent = msg;
             toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
+            setTimeout(() => toast.classList.remove('show'), 2500);
         }
 
         function updateCard() {
@@ -409,30 +305,24 @@
             cardText.textContent = text;
             charCount.textContent = textInput.value.length;
 
-            // Фон
             const allBg = ['bg-sunset','bg-night','bg-ocean','bg-forest','bg-rose','bg-dark','bg-light','bg-gold','bg-lavender','bg-cherry','bg-mint','bg-sunrise'];
             allBg.forEach(b => card.classList.remove(b));
             card.classList.add(currentBg);
 
-            // Шрифт
             const allFonts = ['font-serif','font-sans','font-hand','font-mono','font-narrow','font-wide'];
             allFonts.forEach(f => card.classList.remove(f));
             card.classList.add(currentFont);
 
-            // Размер
             const allSizes = ['size-small','size-medium','size-large','size-xlarge'];
             allSizes.forEach(s => card.classList.remove(s));
             card.classList.add(currentSize);
 
-            // Выравнивание
             const allAligns = ['align-left','align-center','align-right'];
             allAligns.forEach(a => card.classList.remove(a));
             card.classList.add(currentAlign);
 
-            // Украшение
             cardDecor.textContent = currentDecor;
 
-            // Стикер
             if (currentSticker) {
                 cardSticker.style.display = 'block';
                 cardSticker.textContent = currentSticker;
@@ -440,23 +330,18 @@
                 cardSticker.style.display = 'none';
             }
 
-            // Кавычки
             if (showQuotes) {
                 cardText.classList.remove('no-quotes');
             } else {
                 cardText.classList.add('no-quotes');
             }
 
-            // Разделитель
             document.querySelector('.card-divider').style.display = showDivider ? 'block' : 'none';
-
-            // Дата
             cardDate.style.display = showDate ? 'block' : 'none';
         }
 
         textInput.addEventListener('input', updateCard);
 
-        // Обработчики выбора
         function setupOptions(containerId, callback) {
             document.querySelectorAll(`#${containerId} .option`).forEach(opt => {
                 opt.addEventListener('click', () => {
@@ -475,7 +360,6 @@
         setupOptions('decorOptions', (opt) => { currentDecor = opt.dataset.decor; });
         setupOptions('stickerOptions', (opt) => { currentSticker = opt.dataset.sticker; });
 
-        // Переключатели
         function toggleQuotes() {
             showQuotes = !showQuotes;
             document.getElementById('toggleQuotes').classList.toggle('active', showQuotes);
@@ -492,96 +376,7 @@
             updateCard();
         }
 
-        // Темы
-        document.querySelectorAll('#topicOptions .option').forEach(opt => {
-            opt.addEventListener('click', () => {
-                textInput.placeholder = `Напиши о теме «${opt.dataset.topic}»...`;
-                promptText.textContent = `Тема: ${opt.dataset.topic}`;
-                document.querySelectorAll('#topicOptions .option').forEach(o => o.style.borderColor = 'transparent');
-                opt.style.borderColor = '#feca57';
-            });
-        });
-
-        document.getElementById('newPromptBtn').addEventListener('click', randomPrompt);
-
-        // Табы
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-                tab.classList.add('active');
-                document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
-                if (tab.dataset.panel === 'history') renderHistory();
-            });
-        });
-
-        // История
-        function saveToHistory(text, bg, font, size, align, decor, sticker) {
-            history.push({
-                text, bg, font, size, align, decor, sticker,
-                showQuotes, showDivider, showDate,
-                date: new Date().toLocaleDateString('ru-RU'),
-                bgGradient: getComputedStyle(card).background
-            });
-            if (history.length > 30) history = history.slice(-30);
-            localStorage.setItem('candle_history', JSON.stringify(history));
-        }
-
-        function renderHistory() {
-            const list = document.getElementById('historyList');
-            if (history.length === 0) {
-                list.innerHTML = '<div class="history-empty">📋 Здесь будут твои сохранённые карточки</div>';
-                return;
-            }
-            list.innerHTML = history.slice().reverse().map((h, i) => `
-                <div class="history-item" onclick="loadHistory(${history.length - 1 - i})">
-                    <div class="history-thumb" style="background:${h.bgGradient || '#1a1a2e'}">🕯</div>
-                    <div class="history-text">
-                        <div class="ht-title">${h.text?.substring(0, 50) || 'Без текста'}${(h.text?.length > 50 ? '...' : '')}</div>
-                        <div>${h.date || ''}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        window.loadHistory = function(index) {
-            const h = history[index];
-            if (!h) return;
-            textInput.value = h.text || '';
-            currentBg = h.bg || 'bg-sunset';
-            currentFont = h.font || 'font-serif';
-            currentSize = h.size || 'size-medium';
-            currentAlign = h.align || 'align-center';
-            currentDecor = h.decor || '✧ ✧ ✧';
-            currentSticker = h.sticker || '';
-            showQuotes = h.showQuotes !== false;
-            showDivider = h.showDivider !== false;
-            showDate = h.showDate !== false;
-
-            document.getElementById('toggleQuotes').classList.toggle('active', showQuotes);
-            document.getElementById('toggleDivider').classList.toggle('active', showDivider);
-            document.getElementById('toggleDate').classList.toggle('active', showDate);
-
-            // Восстанавливаем активные опции
-            restoreActive('bgOptions', currentBg);
-            restoreActive('fontOptions', currentFont);
-            restoreActive('sizeOptions', currentSize);
-            restoreActive('alignOptions', currentAlign);
-            restoreActive('decorOptions', currentDecor);
-            restoreActive('stickerOptions', currentSticker);
-
-            updateCard();
-            document.querySelector('.tab[data-panel="editor"]').click();
-            showToast('Карточка загружена ✨');
-        };
-
-        function restoreActive(containerId, value) {
-            document.querySelectorAll(`#${containerId} .option`).forEach(o => o.classList.remove('active'));
-            const opt = document.querySelector(`#${containerId} [data-bg="${value}"], #${containerId} [data-font="${value}"], #${containerId} [data-size="${value}"], #${containerId} [data-align="${value}"], #${containerId} [data-decor="${value}"], #${containerId} [data-sticker="${value}"]`);
-            if (opt) opt.classList.add('active');
-        }
-
-        // Сохранение
+        // Сохранить (работает везде)
         document.getElementById('saveBtn').addEventListener('click', async () => {
             const text = textInput.value.trim();
             if (!text) { showToast('Напиши строчку ✏️'); return; }
@@ -599,16 +394,14 @@
                     link.click();
                     document.body.removeChild(link);
                     URL.revokeObjectURL(url);
-                    
-                    saveToHistory(text, currentBg, currentFont, currentSize, currentAlign, currentDecor, currentSticker);
-                    showToast('💾 Сохранено!');
+                    showToast('💾 Сохранено! Найди в галерее и отправь админу');
                 }, 'image/png');
             } catch (err) {
                 showToast('❌ Ошибка. Попробуй ещё раз');
             }
         });
 
-        // Поделиться
+        // Поделиться (на телефоне — системное меню, на ПК — скачивание)
         document.getElementById('shareBtn').addEventListener('click', async () => {
             const text = textInput.value.trim();
             if (!text) { showToast('Напиши строчку ✏️'); return; }
@@ -616,15 +409,15 @@
             try {
                 const canvas = await html2canvas(card, { scale: 2, backgroundColor: null, useCORS: true });
                 canvas.toBlob(async (blob) => {
-                    if (navigator.share) {
-                        const file = new File([blob], 'strochka.png', { type: 'image/png' });
+                    const file = new File([blob], 'strochka.png', { type: 'image/png' });
+
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
                         try {
                             await navigator.share({
                                 files: [file],
                                 title: 'Моя строчка',
                                 text: 'Создано в «Строчки - одиночки» 🕯'
                             });
-                            saveToHistory(text, currentBg, currentFont, currentSize, currentAlign, currentDecor, currentSticker);
                         } catch (e) {
                             // Пользователь отменил
                         }
@@ -638,7 +431,7 @@
                         link.click();
                         document.body.removeChild(link);
                         URL.revokeObjectURL(url);
-                        showToast('💾 Сохранено (Share API не поддерживается)');
+                        showToast('💾 Сохранено! Отправь админу');
                     }
                 }, 'image/png');
             } catch (err) {
