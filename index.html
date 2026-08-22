@@ -25,11 +25,16 @@
             user-select: none;
             -webkit-user-select: none;
             padding: 10px;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
         }
         
         .header {
             text-align: center;
             margin-bottom: 10px;
+            width: 100%;
         }
         
         .header h1 {
@@ -100,6 +105,20 @@
             animation: pulse 1s infinite;
         }
         
+        .cell-capture {
+            cursor: pointer;
+        }
+        
+        .cell-capture::after {
+            content: '';
+            width: 40%;
+            height: 40%;
+            background: rgba(255, 0, 0, 0.7);
+            border-radius: 50%;
+            position: absolute;
+            animation: pulse 0.5s infinite;
+        }
+        
         .piece {
             width: 80%;
             height: 80%;
@@ -108,7 +127,7 @@
             transition: all 0.2s;
             position: relative;
             box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-            pointer-events: none; /* Чтобы клики шли на клетку */
+            pointer-events: none;
         }
         
         .piece-white {
@@ -142,6 +161,7 @@
             gap: 10px;
             flex-wrap: wrap;
             justify-content: center;
+            width: 100%;
         }
         
         .btn {
@@ -171,30 +191,19 @@
             margin-top: 10px;
             font-size: 14px;
             opacity: 0.8;
+            width: 100%;
         }
         
         @keyframes pulse {
             0%, 100% { transform: scale(1); opacity: 1; }
             50% { transform: scale(0.8); opacity: 0.5; }
         }
-        
-        /* Адаптация под маленькие экраны */
-        @media (max-width: 350px) {
-            .header h1 {
-                font-size: 20px;
-            }
-            .btn {
-                padding: 10px 15px;
-                font-size: 14px;
-                min-width: 80px;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>♟ Шашки</h1>
-        <div class="status" id="status">Ход: Белые</div>
+        <div class="status" id="status">Ход: Белые (Вы)</div>
     </div>
     
     <div class="board-container">
@@ -206,7 +215,7 @@
         <button class="btn btn-secondary" onclick="closeGame()">✖ Закрыть</button>
     </div>
     
-    <div class="info" id="info">Нажмите на шашку, затем на клетку для хода</div>
+    <div class="info" id="info">Вы играете белыми. Нажмите на шашку для выбора</div>
     
     <script>
         const tg = window.Telegram.WebApp;
@@ -219,12 +228,14 @@
         let validMoves = [];
         let currentPlayer = 'white';
         let gameOver = false;
+        let isAIThinking = false;
+        const playerColor = 'white';
+        const aiColor = 'black';
         
         // Инициализация
         function initBoard() {
             board = Array(8).fill(null).map(() => Array(8).fill(null));
             
-            // Расстановка шашек
             for (let row = 0; row < 8; row++) {
                 for (let col = 0; col < 8; col++) {
                     if ((row + col) % 2 === 1) {
@@ -247,24 +258,27 @@
                 for (let col = 0; col < 8; col++) {
                     const cell = document.createElement('div');
                     
-                    // Определяем цвет клетки
                     if ((row + col) % 2 === 0) {
                         cell.className = 'cell cell-light';
                     } else {
                         cell.className = 'cell cell-dark';
                     }
                     
-                    // Подсветка выбранной клетки
                     if (selectedCell && selectedCell.row === row && selectedCell.col === col) {
                         cell.classList.add('cell-selected');
                     }
                     
-                    // Подсветка доступных ходов
-                    if (validMoves.some(move => move.to.row === row && move.to.col === col)) {
-                        cell.classList.add('cell-valid');
-                    }
+                    // Подсветка ходов
+                    validMoves.forEach(move => {
+                        if (move.to.row === row && move.to.col === col) {
+                            if (move.captures.length > 0) {
+                                cell.classList.add('cell-capture');
+                            } else {
+                                cell.classList.add('cell-valid');
+                            }
+                        }
+                    });
                     
-                    // Добавляем шашку
                     if (board[row][col]) {
                         const piece = document.createElement('div');
                         piece.className = 'piece';
@@ -282,7 +296,6 @@
                         cell.appendChild(piece);
                     }
                     
-                    // Обработчик клика
                     cell.addEventListener('click', () => onCellClick(row, col));
                     cell.addEventListener('touchend', (e) => {
                         e.preventDefault();
@@ -293,7 +306,6 @@
                 }
             }
             
-            // Обновление статуса
             updateStatus();
         }
         
@@ -301,38 +313,35 @@
         function updateStatus() {
             const statusElement = document.getElementById('status');
             if (gameOver) {
-                statusElement.textContent = `🏆 Победили ${currentPlayer === 'white' ? 'Белые' : 'Черные'}!`;
+                statusElement.textContent = currentPlayer === 'white' ? '🏆 Вы победили!' : '🤖 ИИ победил!';
             } else {
-                statusElement.textContent = `Ход: ${currentPlayer === 'white' ? 'Белые' : 'Черные'}`;
+                statusElement.textContent = currentPlayer === 'white' ? 'Ход: Вы (белые)' : 'Ход: ИИ (черные)';
             }
         }
         
-        // Получение возможных ходов
-        function getValidMoves(row, col) {
+        // Получение ВСЕХ возможных взятий для игрока
+        function getAllCaptures(color) {
+            const captures = [];
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    if (board[row][col] && board[row][col].color === color) {
+                        const pieceCaptures = getCaptureMoves(row, col);
+                        captures.push(...pieceCaptures);
+                    }
+                }
+            }
+            return captures;
+        }
+        
+        // Получение взятий для конкретной шашки
+        function getCaptureMoves(row, col) {
             const piece = board[row][col];
-            if (!piece || piece.color !== currentPlayer) return [];
+            if (!piece) return [];
             
             const moves = [];
             const directions = piece.isKing ? [-1, 1] : (piece.color === 'white' ? [-1] : [1]);
             
-            // Обычные ходы
             for (const dr of directions) {
-                for (const dc of [-1, 1]) {
-                    const newRow = row + dr;
-                    const newCol = col + dc;
-                    
-                    if (isValid(newRow, newCol) && !board[newRow][newCol]) {
-                        moves.push({
-                            from: { row, col },
-                            to: { row: newRow, col: newCol },
-                            captures: []
-                        });
-                    }
-                }
-            }
-            
-            // Взятие
-            for (const dr of [-1, 1]) {
                 for (const dc of [-1, 1]) {
                     const captureRow = row + dr;
                     const captureCol = col + dc;
@@ -357,6 +366,66 @@
             return moves;
         }
         
+        // Получение обычных ходов для шашки
+        function getNormalMoves(row, col) {
+            const piece = board[row][col];
+            if (!piece) return [];
+            
+            const moves = [];
+            const directions = piece.isKing ? [-1, 1] : (piece.color === 'white' ? [-1] : [1]);
+            
+            for (const dr of directions) {
+                for (const dc of [-1, 1]) {
+                    const newRow = row + dr;
+                    const newCol = col + dc;
+                    
+                    if (isValid(newRow, newCol) && !board[newRow][newCol]) {
+                        moves.push({
+                            from: { row, col },
+                            to: { row: newRow, col: newCol },
+                            captures: []
+                        });
+                    }
+                }
+            }
+            
+            return moves;
+        }
+        
+        // Получение всех ходов для игрока (с приоритетом взятия)
+        function getAllMoves(color) {
+            const allCaptures = getAllCaptures(color);
+            if (allCaptures.length > 0) {
+                return allCaptures; // Обязательное взятие
+            }
+            
+            const normalMoves = [];
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    if (board[row][col] && board[row][col].color === color) {
+                        normalMoves.push(...getNormalMoves(row, col));
+                    }
+                }
+            }
+            return normalMoves;
+        }
+        
+        // Получение ходов для конкретной шашки (с учетом обязательного взятия)
+        function getValidMoves(row, col) {
+            const piece = board[row][col];
+            if (!piece || piece.color !== currentPlayer) return [];
+            
+            // Проверяем, есть ли обязательные взятия
+            const allCaptures = getAllCaptures(currentPlayer);
+            if (allCaptures.length > 0) {
+                // Если есть взятия, можно ходить только с взятием
+                return getCaptureMoves(row, col);
+            }
+            
+            // Если нет взятий, обычные ходы
+            return getNormalMoves(row, col);
+        }
+        
         // Проверка позиции
         function isValid(row, col) {
             return row >= 0 && row < 8 && col >= 0 && col < 8;
@@ -364,7 +433,7 @@
         
         // Обработка клика
         function onCellClick(row, col) {
-            if (gameOver) return;
+            if (gameOver || isAIThinking || currentPlayer !== playerColor) return;
             
             // Если есть выбранная шашка и клик по доступному ходу
             const move = validMoves.find(m => m.to.row === row && m.to.col === col);
@@ -375,16 +444,22 @@
             
             // Выбор шашки
             const piece = board[row][col];
-            if (piece && piece.color === currentPlayer) {
+            if (piece && piece.color === playerColor) {
                 selectedCell = { row, col };
                 validMoves = getValidMoves(row, col);
-                document.getElementById('info').textContent = 
-                    validMoves.length > 0 ? 'Выберите клетку для хода' : 'Нет доступных ходов';
+                
+                if (validMoves.length === 0) {
+                    document.getElementById('info').textContent = 'Нет доступных ходов для этой шашки';
+                } else if (validMoves[0].captures.length > 0) {
+                    document.getElementById('info').textContent = 'Обязательное взятие! Выберите красную клетку';
+                } else {
+                    document.getElementById('info').textContent = 'Выберите зеленую клетку для хода';
+                }
             } else {
                 // Отмена выбора
                 selectedCell = null;
                 validMoves = [];
-                document.getElementById('info').textContent = 'Нажмите на шашку, затем на клетку для хода';
+                document.getElementById('info').textContent = 'Нажмите на свою шашку';
             }
             
             renderBoard();
@@ -392,17 +467,14 @@
         
         // Выполнение хода
         function makeMove(move) {
-            // Перемещение
             const piece = board[move.from.row][move.from.col];
             board[move.to.row][move.to.col] = piece;
             board[move.from.row][move.from.col] = null;
             
-            // Взятие
             move.captures.forEach(capture => {
                 board[capture.row][capture.col] = null;
             });
             
-            // Превращение в дамку
             if ((piece.color === 'white' && move.to.row === 0) ||
                 (piece.color === 'black' && move.to.row === 7)) {
                 piece.isKing = true;
@@ -415,25 +487,114 @@
             if (checkWin()) {
                 gameOver = true;
                 document.getElementById('info').textContent = 'Игра окончена!';
+                renderBoard();
                 
-                // Отправка результата в бот
                 tg.sendData(JSON.stringify({
                     action: 'game_over',
-                    winner: currentPlayer
+                    winner: currentPlayer === 'white' ? 'player' : 'ai'
                 }));
+                return;
             }
             
             // Смена хода
             currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
-            
             renderBoard();
+            
+            // Ход ИИ
+            if (currentPlayer === aiColor && !gameOver) {
+                isAIThinking = true;
+                document.getElementById('info').textContent = 'ИИ думает...';
+                setTimeout(() => {
+                    aiMove();
+                    isAIThinking = false;
+                }, 500);
+            }
+        }
+        
+        // Ход ИИ
+        function aiMove() {
+            if (gameOver) return;
+            
+            const aiMoves = getAllMoves(aiColor);
+            
+            if (aiMoves.length === 0) {
+                // ИИ не может ходить - победа игрока
+                gameOver = true;
+                currentPlayer = playerColor;
+                document.getElementById('info').textContent = 'ИИ не может ходить! Вы победили!';
+                renderBoard();
+                return;
+            }
+            
+            // Приоритет взятия
+            const captureMoves = aiMoves.filter(m => m.captures.length > 0);
+            const availableMoves = captureMoves.length > 0 ? captureMoves : aiMoves;
+            
+            // Выбор лучшего хода (простая эвристика)
+            let bestMove = availableMoves[0];
+            let bestScore = -Infinity;
+            
+            for (const move of availableMoves) {
+                let score = 0;
+                
+                // За взятие даем очки
+                score += move.captures.length * 10;
+                
+                // За превращение в дамку
+                if (move.to.row === 7) score += 5;
+                
+                // За продвижение вперед
+                score += move.to.row - move.from.row;
+                
+                // За безопасность (не под боем)
+                if (!isUnderAttack(move.to.row, move.to.col, aiColor)) {
+                    score += 3;
+                }
+                
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMove = move;
+                }
+            }
+            
+            makeMove(bestMove);
+        }
+        
+        // Проверка, находится ли клетка под боем
+        function isUnderAttack(row, col, color) {
+            const enemyColor = color === 'white' ? 'black' : 'white';
+            
+            for (const dr of [-1, 1]) {
+                for (const dc of [-1, 1]) {
+                    const attackRow = row + dr;
+                    const attackCol = col + dc;
+                    const landRow = row + dr * 2;
+                    const landCol = col + dc * 2;
+                    
+                    if (isValid(attackRow, attackCol) && 
+                        isValid(landRow, landCol) &&
+                        board[attackRow][attackCol] && 
+                        board[attackRow][attackCol].color === enemyColor &&
+                        !board[landRow][landCol]) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
         
         // Проверка победы
         function checkWin() {
             const whitePieces = board.flat().filter(p => p && p.color === 'white').length;
             const blackPieces = board.flat().filter(p => p && p.color === 'black').length;
-            return whitePieces === 0 || blackPieces === 0;
+            
+            if (whitePieces === 0 || blackPieces === 0) {
+                return true;
+            }
+            
+            // Проверка на отсутствие ходов
+            const currentMoves = getAllMoves(currentPlayer);
+            return currentMoves.length === 0;
         }
         
         // Новая игра
@@ -443,7 +604,8 @@
             validMoves = [];
             currentPlayer = 'white';
             gameOver = false;
-            document.getElementById('info').textContent = 'Новая игра! Ходят белые';
+            isAIThinking = false;
+            document.getElementById('info').textContent = 'Новая игра! Вы ходите первыми';
             renderBoard();
         }
         
