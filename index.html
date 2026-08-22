@@ -333,32 +333,86 @@
             return captures;
         }
         
-        // Получение взятий для конкретной шашки
+        // Получение взятий для конкретной шашки (с правильными ходами дамки)
         function getCaptureMoves(row, col) {
             const piece = board[row][col];
             if (!piece) return [];
             
             const moves = [];
-            const directions = piece.isKing ? [-1, 1] : (piece.color === 'white' ? [-1] : [1]);
             
-            for (const dr of directions) {
-                for (const dc of [-1, 1]) {
-                    const captureRow = row + dr;
-                    const captureCol = col + dc;
-                    const landRow = row + dr * 2;
-                    const landCol = col + dc * 2;
+            if (piece.isKing) {
+                // Дамка бьет через любое количество пустых клеток
+                const directions = [
+                    { dr: -1, dc: -1 },
+                    { dr: -1, dc: 1 },
+                    { dr: 1, dc: -1 },
+                    { dr: 1, dc: 1 }
+                ];
+                
+                for (const dir of directions) {
+                    let captureRow = row + dir.dr;
+                    let captureCol = col + dir.dc;
                     
+                    // Ищем первую шашку соперника на пути
+                    while (isValid(captureRow, captureCol) && !board[captureRow][captureCol]) {
+                        captureRow += dir.dr;
+                        captureCol += dir.dc;
+                    }
+                    
+                    // Если нашли шашку соперника
                     if (isValid(captureRow, captureCol) && 
-                        isValid(landRow, landCol) &&
                         board[captureRow][captureCol] && 
-                        board[captureRow][captureCol].color !== piece.color &&
-                        !board[landRow][landCol]) {
+                        board[captureRow][captureCol].color !== piece.color) {
                         
-                        moves.push({
-                            from: { row, col },
-                            to: { row: landRow, col: landCol },
-                            captures: [{ row: captureRow, col: captureCol }]
-                        });
+                        // Ищем свободную клетку за ней
+                        let landRow = captureRow + dir.dr;
+                        let landCol = captureCol + dir.dc;
+                        
+                        while (isValid(landRow, landCol) && !board[landRow][landCol]) {
+                            // Создаем ход с взятием
+                            const move = {
+                                from: { row, col },
+                                to: { row: landRow, col: landCol },
+                                captures: [{ row: captureRow, col: captureCol }],
+                                piece: piece
+                            };
+                            
+                            // Проверяем возможность множественного взятия
+                            const multiCaptures = findMultiCaptures(move, piece);
+                            moves.push(...multiCaptures);
+                            
+                            landRow += dir.dr;
+                            landCol += dir.dc;
+                        }
+                    }
+                }
+            } else {
+                // Обычная шашка бьет во всех 4 направлениях
+                const directions = [-1, 1];
+                
+                for (const dr of directions) {
+                    for (const dc of directions) {
+                        const captureRow = row + dr;
+                        const captureCol = col + dc;
+                        const landRow = row + dr * 2;
+                        const landCol = col + dc * 2;
+                        
+                        if (isValid(captureRow, captureCol) && 
+                            isValid(landRow, landCol) &&
+                            board[captureRow][captureCol] && 
+                            board[captureRow][captureCol].color !== piece.color &&
+                            !board[landRow][landCol]) {
+                            
+                            const move = {
+                                from: { row, col },
+                                to: { row: landRow, col: landCol },
+                                captures: [{ row: captureRow, col: captureCol }],
+                                piece: piece
+                            };
+                            
+                            const multiCaptures = findMultiCaptures(move, piece);
+                            moves.push(...multiCaptures);
+                        }
                     }
                 }
             }
@@ -366,25 +420,155 @@
             return moves;
         }
         
-        // Получение обычных ходов для шашки
+        // Поиск множественных взятий (рекурсивно) - обновленная версия
+        function findMultiCaptures(move, originalPiece) {
+            const results = [move];
+            const lastPos = move.to;
+            const capturedSet = new Set(move.captures.map(c => `${c.row},${c.col}`));
+            
+            // Временно выполняем ход для проверки дальнейших взятий
+            const tempBoard = board.map(row => [...row]);
+            const piece = { ...originalPiece };
+            
+            // Выполняем взятие на временной доске
+            tempBoard[move.to.row][move.to.col] = piece;
+            tempBoard[move.from.row][move.from.col] = null;
+            move.captures.forEach(capture => {
+                tempBoard[capture.row][capture.col] = null;
+            });
+            
+            // Проверяем, стала ли шашка дамкой
+            if ((piece.color === 'white' && move.to.row === 0) ||
+                (piece.color === 'black' && move.to.row === 7)) {
+                piece.isKing = true;
+            }
+            
+            // Ищем дальнейшие взятия из новой позиции
+            if (piece.isKing) {
+                // Дамка бьет по-дамски
+                const directions = [
+                    { dr: -1, dc: -1 },
+                    { dr: -1, dc: 1 },
+                    { dr: 1, dc: -1 },
+                    { dr: 1, dc: 1 }
+                ];
+                
+                for (const dir of directions) {
+                    let captureRow = lastPos.row + dir.dr;
+                    let captureCol = lastPos.col + dir.dc;
+                    
+                    // Ищем первую шашку соперника
+                    while (isValid(captureRow, captureCol) && !tempBoard[captureRow][captureCol]) {
+                        captureRow += dir.dr;
+                        captureCol += dir.dc;
+                    }
+                    
+                    if (isValid(captureRow, captureCol) && 
+                        tempBoard[captureRow][captureCol] && 
+                        tempBoard[captureRow][captureCol].color !== piece.color) {
+                        
+                        // Ищем свободную клетку за ней
+                        let landRow = captureRow + dir.dr;
+                        let landCol = captureCol + dir.dc;
+                        
+                        while (isValid(landRow, landCol) && !tempBoard[landRow][landCol]) {
+                            if (!capturedSet.has(`${captureRow},${captureCol}`)) {
+                                const extendedMove = {
+                                    from: move.from,
+                                    to: { row: landRow, col: landCol },
+                                    captures: [...move.captures, { row: captureRow, col: captureCol }],
+                                    piece: originalPiece
+                                };
+                                
+                                results.push(...findMultiCaptures(extendedMove, originalPiece));
+                            }
+                            
+                            landRow += dir.dr;
+                            landCol += dir.dc;
+                        }
+                    }
+                }
+            } else {
+                // Обычная шашка бьет во всех направлениях
+                const directions = [-1, 1];
+                
+                for (const dr of directions) {
+                    for (const dc of directions) {
+                        const captureRow = lastPos.row + dr;
+                        const captureCol = lastPos.col + dc;
+                        const landRow = lastPos.row + dr * 2;
+                        const landCol = lastPos.col + dc * 2;
+                        
+                        if (isValid(captureRow, captureCol) && 
+                            isValid(landRow, landCol) &&
+                            tempBoard[captureRow][captureCol] && 
+                            tempBoard[captureRow][captureCol].color !== piece.color &&
+                            !tempBoard[landRow][landCol] &&
+                            !capturedSet.has(`${captureRow},${captureCol}`)) {
+                            
+                            const extendedMove = {
+                                from: move.from,
+                                to: { row: landRow, col: landCol },
+                                captures: [...move.captures, { row: captureRow, col: captureCol }],
+                                piece: originalPiece
+                            };
+                            
+                            results.push(...findMultiCaptures(extendedMove, originalPiece));
+                        }
+                    }
+                }
+            }
+            
+            return results;
+        }
+        
+        // Получение обычных ходов для шашки (с правильными ходами дамки)
         function getNormalMoves(row, col) {
             const piece = board[row][col];
             if (!piece) return [];
             
             const moves = [];
-            const directions = piece.isKing ? [-1, 1] : (piece.color === 'white' ? [-1] : [1]);
             
-            for (const dr of directions) {
-                for (const dc of [-1, 1]) {
-                    const newRow = row + dr;
-                    const newCol = col + dc;
+            if (piece.isKing) {
+                // Дамка ходит на любое количество клеток по диагонали
+                const directions = [
+                    { dr: -1, dc: -1 },
+                    { dr: -1, dc: 1 },
+                    { dr: 1, dc: -1 },
+                    { dr: 1, dc: 1 }
+                ];
+                
+                for (const dir of directions) {
+                    let newRow = row + dir.dr;
+                    let newCol = col + dir.dc;
                     
-                    if (isValid(newRow, newCol) && !board[newRow][newCol]) {
+                    while (isValid(newRow, newCol) && !board[newRow][newCol]) {
                         moves.push({
                             from: { row, col },
                             to: { row: newRow, col: newCol },
                             captures: []
                         });
+                        
+                        newRow += dir.dr;
+                        newCol += dir.dc;
+                    }
+                }
+            } else {
+                // Обычная шашка ходит только на одну клетку вперед
+                const directions = piece.color === 'white' ? [-1] : [1];
+                
+                for (const dr of directions) {
+                    for (const dc of [-1, 1]) {
+                        const newRow = row + dr;
+                        const newCol = col + dc;
+                        
+                        if (isValid(newRow, newCol) && !board[newRow][newCol]) {
+                            moves.push({
+                                from: { row, col },
+                                to: { row: newRow, col: newCol },
+                                captures: []
+                            });
+                        }
                     }
                 }
             }
@@ -468,13 +652,17 @@
         // Выполнение хода
         function makeMove(move) {
             const piece = board[move.from.row][move.from.col];
+            
+            // Перемещаем шашку
             board[move.to.row][move.to.col] = piece;
             board[move.from.row][move.from.col] = null;
             
+            // Убираем все взятые шашки
             move.captures.forEach(capture => {
                 board[capture.row][capture.col] = null;
             });
             
+            // Превращение в дамку (только если шашка остановилась на последней линии)
             if ((piece.color === 'white' && move.to.row === 0) ||
                 (piece.color === 'black' && move.to.row === 7)) {
                 piece.isKing = true;
@@ -518,7 +706,6 @@
             const aiMoves = getAllMoves(aiColor);
             
             if (aiMoves.length === 0) {
-                // ИИ не может ходить - победа игрока
                 gameOver = true;
                 currentPlayer = playerColor;
                 document.getElementById('info').textContent = 'ИИ не может ходить! Вы победили!';
@@ -530,7 +717,7 @@
             const captureMoves = aiMoves.filter(m => m.captures.length > 0);
             const availableMoves = captureMoves.length > 0 ? captureMoves : aiMoves;
             
-            // Выбор лучшего хода (простая эвристика)
+            // Выбор лучшего хода
             let bestMove = availableMoves[0];
             let bestScore = -Infinity;
             
@@ -538,17 +725,17 @@
                 let score = 0;
                 
                 // За взятие даем очки
-                score += move.captures.length * 10;
+                score += move.captures.length * 20;
                 
                 // За превращение в дамку
-                if (move.to.row === 7) score += 5;
+                if (move.to.row === 7) score += 15;
                 
                 // За продвижение вперед
                 score += move.to.row - move.from.row;
                 
-                // За безопасность (не под боем)
-                if (!isUnderAttack(move.to.row, move.to.col, aiColor)) {
-                    score += 3;
+                // За множественное взятие
+                if (move.captures.length > 1) {
+                    score += move.captures.length * 10;
                 }
                 
                 if (score > bestScore) {
@@ -564,22 +751,60 @@
         function isUnderAttack(row, col, color) {
             const enemyColor = color === 'white' ? 'black' : 'white';
             
-            for (const dr of [-1, 1]) {
-                for (const dc of [-1, 1]) {
-                    const attackRow = row + dr;
-                    const attackCol = col + dc;
-                    const landRow = row + dr * 2;
-                    const landCol = col + dc * 2;
+            // Проверяем все направления
+            const directions = [
+                { dr: -1, dc: -1 },
+                { dr: -1, dc: 1 },
+                { dr: 1, dc: -1 },
+                { dr: 1, dc: 1 }
+            ];
+            
+            for (const dir of directions) {
+                // Проверяем обычное взятие (на 1 клетку)
+                const attackRow = row + dir.dr;
+                const attackCol = col + dir.dc;
+                const landRow = row + dir.dr * 2;
+                const landCol = col + dir.dc * 2;
+                
+                if (isValid(attackRow, attackCol) && 
+                    isValid(landRow, landCol) &&
+                    board[attackRow][attackCol] && 
+                    board[attackRow][attackCol].color === enemyColor &&
+                    !board[landRow][landCol]) {
+                    return true;
+                }
+                
+                // Проверяем взятие дамкой (через несколько клеток)
+                let checkRow = row + dir.dr;
+                let checkCol = col + dir.dc;
+                let foundEnemy = false;
+                
+                while (isValid(checkRow, checkCol)) {
+                    if (board[checkRow][checkCol]) {
+                        if (board[checkRow][checkCol].color === enemyColor && 
+                            board[checkRow][checkCol].isKing) {
+                            // Нашли дамку соперника
+                            foundEnemy = true;
+                        } else {
+                            // Нашли другую шашку
+                            break;
+                        }
+                    }
+                    checkRow += dir.dr;
+                    checkCol += dir.dc;
+                }
+                
+                if (foundEnemy) {
+                    // Проверяем, есть ли свободная клетка за дамкой
+                    let landRow = row + dir.dr * 2;
+                    let landCol = col + dir.dc * 2;
                     
-                    if (isValid(attackRow, attackCol) && 
-                        isValid(landRow, landCol) &&
-                        board[attackRow][attackCol] && 
-                        board[attackRow][attackCol].color === enemyColor &&
-                        !board[landRow][landCol]) {
+                    while (isValid(landRow, landCol) && !board[landRow][landCol]) {
                         return true;
                     }
                 }
             }
+            
             return false;
         }
         
