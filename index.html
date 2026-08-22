@@ -1,797 +1,611 @@
+<!-- index.html -->
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Строчки - одиночки 🕯</title>
+    <title>Шашки - Telegram</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #0f0f1a;
-            color: #e0e0e0;
-            min-height: 100vh;
-            padding: 16px;
-            padding-bottom: 120px;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .container { max-width: 480px; margin: 0 auto; }
-
-        .header { text-align: center; margin-bottom: 16px; }
-        .header .icon { font-size: 48px; display: block; margin-bottom: 8px; animation: flicker 3s infinite; }
-        @keyframes flicker { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
-        .header h1 { font-size: 22px; background: linear-gradient(135deg, #feca57, #ff9ff3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .header p { color: #666; font-size: 13px; margin-top: 4px; }
-
-        /* Табы */
-        .tabs { display: flex; gap: 4px; margin-bottom: 16px; background: #1a1a2e; border-radius: 12px; padding: 4px; }
-        .tab { flex: 1; padding: 10px 8px; text-align: center; border-radius: 10px; font-size: 13px; cursor: pointer; transition: all 0.2s; color: #888; border: none; background: transparent; }
-        .tab.active { background: #16213e; color: #feca57; }
-        .tab .tab-emoji { display: block; font-size: 18px; margin-bottom: 2px; }
-        .panel { display: none; }
-        .panel.active { display: block; }
-
-        /* Карточка */
-        .preview { margin-bottom: 12px; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
-        .card {
-            aspect-ratio: 3/4;
-            padding: 40px 28px;
+        
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Arial', sans-serif;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            text-align: center;
+            min-height: 100vh;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .player-name {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .player-status {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        .board-container {
             position: relative;
+            background: #deb887;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        #board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            width: min(80vw, 500px);
+            height: min(80vw, 500px);
+            gap: 0;
+            position: relative;
+        }
+        
+        .cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        
+        .cell.dark {
+            background: #8b4513;
+        }
+        
+        .cell.light {
+            background: #f4d03f;
+        }
+        
+        .cell.valid-move {
+            cursor: pointer;
+        }
+        
+        .cell.valid-move::after {
+            content: '';
+            width: 30%;
+            height: 30%;
+            background: rgba(0, 255, 0, 0.5);
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+        
+        .cell.selected {
+            box-shadow: inset 0 0 0 3px #ffd700;
+            animation: glow 1.5s infinite;
+        }
+        
+        .cell.last-move {
+            background: #ffa500;
+        }
+        
+        .piece {
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        .piece.white {
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+            border: 2px solid #cccccc;
+        }
+        
+        .piece.black {
+            background: linear-gradient(135deg, #333333 0%, #000000 100%);
+            border: 2px solid #666666;
+        }
+        
+        .piece.king {
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .piece.king::after {
+            content: '♛';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: #ffd700;
+        }
+        
+        .piece:hover {
+            transform: scale(1.1);
+            z-index: 2;
+        }
+        
+        .piece.selected {
+            animation: bounce 0.5s infinite;
+            z-index: 3;
+        }
+        
+        .game-info {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+        
+        .turn-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+        }
+        
+        .turn-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+        
+        .turn-dot.white {
+            background: white;
+        }
+        
+        .turn-dot.black {
+            background: black;
+            border: 2px solid white;
+        }
+        
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 10;
+            animation: slideIn 0.5s ease;
+        }
+        
+        .game-over h2 {
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
-        .card-decoration { position: absolute; top: 20px; font-size: 12px; opacity: 0.4; letter-spacing: 4px; }
-        .card-text { font-size: 26px; line-height: 1.5; margin-bottom: 16px; word-break: break-word; z-index: 1; font-style: italic; }
-        .card-text::before { content: '«'; }
-        .card-text::after { content: '»'; }
-        .card-text.no-quotes::before, .card-text.no-quotes::after { content: ''; }
-        .card-divider { width: 40px; height: 2px; background: currentColor; opacity: 0.4; margin-bottom: 16px; }
-        .card-author { font-size: 14px; opacity: 0.7; z-index: 1; }
-        .card-channel { position: absolute; bottom: 20px; font-size: 11px; opacity: 0.4; z-index: 1; }
-        .card-date { position: absolute; top: 20px; right: 24px; font-size: 10px; opacity: 0.3; z-index: 1; writing-mode: vertical-rl; }
-        .card-sticker { position: absolute; bottom: 60px; right: 24px; font-size: 32px; opacity: 0.6; z-index: 1; }
-
-        /* Фоны */
-        .bg-sunset { background: linear-gradient(160deg, #1a0a2e, #5b2c56, #c94b4b, #f0a050); color: #fff; }
-        .bg-night { background: linear-gradient(160deg, #0a0a1a, #16213e, #1a1a3e, #2d1b69); color: #c8c8e8; }
-        .bg-ocean { background: linear-gradient(160deg, #0c1b33, #1b3a4b, #26547c, #4299e1); color: #e0f0ff; }
-        .bg-forest { background: linear-gradient(160deg, #0d1f0d, #1a3a1a, #2d5a2d, #4a7c4a); color: #d8f0d8; }
-        .bg-rose { background: linear-gradient(160deg, #2d0a1a, #5c2d4a, #8b5a6a, #c4909a); color: #ffe0e8; }
-        .bg-dark { background: linear-gradient(160deg, #050505, #111111, #1a1a1a, #252525); color: #ccc; }
-        .bg-light { background: linear-gradient(160deg, #e8e8e8, #f2f2f2, #fafafa, #ffffff); color: #1a1a1a; }
-        .bg-gold { background: linear-gradient(160deg, #1a0f00, #3d2800, #8b6914, #d4af37); color: #fff8e0; }
-        .bg-lavender { background: linear-gradient(160deg, #1a0a2e, #4a2d5c, #8b6baa, #c9b8e8); color: #f8f0ff; }
-        .bg-cherry { background: linear-gradient(160deg, #1a0a0a, #4a1a1a, #8b2d2d, #c94b4b); color: #ffe0e0; }
-        .bg-mint { background: linear-gradient(160deg, #0a1a1a, #1a3a3a, #2d5a5a, #4b8b8b); color: #e0f8f8; }
-        .bg-sunrise { background: linear-gradient(160deg, #1a0f00, #5c3a1a, #c97a2d, #f0c050); color: #fff8e8; }
-
-        /* Шрифты */
-        .card.font-serif .card-text { font-family: Georgia, 'Times New Roman', serif; }
-        .card.font-sans .card-text { font-family: 'Helvetica Neue', Arial, sans-serif; font-style: normal; }
-        .card.font-hand .card-text { font-family: 'Brush Script MT', cursive; font-size: 30px; }
-        .card.font-mono .card-text { font-family: 'Courier New', monospace; font-style: normal; font-size: 22px; }
-        .card.font-narrow .card-text { font-family: 'Arial Narrow', sans-serif; font-style: normal; font-size: 24px; letter-spacing: 1px; }
-        .card.font-wide .card-text { font-family: 'Gill Sans', sans-serif; font-size: 28px; letter-spacing: 2px; }
-
-        /* Размер текста */
-        .card.size-small .card-text { font-size: 20px; }
-        .card.size-medium .card-text { font-size: 26px; }
-        .card.size-large .card-text { font-size: 32px; }
-        .card.size-xlarge .card-text { font-size: 38px; }
-
-        /* Выравнивание */
-        .card.align-left { text-align: left; align-items: flex-start; padding: 40px 28px; }
-        .card.align-center { text-align: center; align-items: center; }
-        .card.align-right { text-align: right; align-items: flex-end; padding: 40px 28px; }
-
-        textarea {
-            width: 100%; padding: 14px; border-radius: 14px; border: 1px solid #2a2a3e;
-            background: #1a1a2e; color: #e0e0e0; font-size: 16px; resize: vertical;
-            min-height: 100px; font-family: inherit; transition: border-color 0.3s;
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
-        textarea:focus { outline: none; border-color: #feca57; }
-        textarea::placeholder { color: #555; }
-        .char-count { text-align: right; font-size: 11px; color: #555; margin-top: 4px; }
-
-        .section { margin-bottom: 14px; }
-        .section-label { font-size: 12px; color: #666; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-        .options { display: flex; gap: 8px; flex-wrap: wrap; }
-        .option {
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-            padding: 8px 6px; border-radius: 12px; border: 2px solid transparent;
-            cursor: pointer; transition: all 0.2s; min-width: 56px; background: #1a1a2e;
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
-        .option.active { border-color: #feca57; background: rgba(254,202,87,0.1); }
-        .option:active { transform: scale(0.95); }
-        .option .swatch { width: 36px; height: 36px; border-radius: 10px; }
-        .option .font-sample { font-size: 24px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: #16213e; color: #e0e0e0; }
-        .option .opt-label { font-size: 10px; color: #888; }
-
-        /* Промпты */
-        .prompt-card { background: #1a1a2e; border-radius: 14px; padding: 20px; text-align: center; margin-bottom: 16px; }
-        .prompt-text { font-size: 18px; font-style: italic; margin-bottom: 12px; color: #ccc; }
-        .prompt-btn {
-            padding: 8px 20px; border-radius: 20px; background: #16213e; color: #feca57;
-            border: none; cursor: pointer; font-size: 14px; transition: all 0.2s;
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: inset 0 0 0 3px #ffd700; }
+            50% { box-shadow: inset 0 0 0 5px #ffd700, 0 0 20px #ffd700; }
         }
-
-        /* История */
-        .history-item {
-            display: flex; gap: 12px; align-items: center; padding: 12px;
-            background: #1a1a2e; border-radius: 12px; margin-bottom: 8px; cursor: pointer;
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
-        .history-item:active { background: #16213e; }
-        .history-thumb {
-            width: 48px; height: 64px; border-radius: 8px; flex-shrink: 0;
-            display: flex; align-items: center; justify-content: center; font-size: 20px;
+        
+        @keyframes slideIn {
+            from { transform: translate(-50%, -50%) scale(0); }
+            to { transform: translate(-50%, -50%) scale(1); }
         }
-        .history-text { flex: 1; font-size: 13px; color: #aaa; }
-        .history-text .ht-title { color: #e0e0e0; font-size: 14px; margin-bottom: 2px; }
-        .history-empty { text-align: center; padding: 40px 20px; color: #555; }
-
-        /* Переключатели */
-        .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
-        .toggle-row span { font-size: 14px; }
-        .toggle {
-            width: 44px; height: 24px; background: #333; border-radius: 12px;
-            position: relative; cursor: pointer; transition: background 0.3s;
-        }
-        .toggle.active { background: #feca57; }
-        .toggle::after {
-            content: ''; width: 20px; height: 20px; background: #fff; border-radius: 50%;
-            position: absolute; top: 2px; left: 2px; transition: left 0.3s;
-        }
-        .toggle.active::after { left: 22px; }
-
-        .buttons { display: flex; gap: 8px; margin-top: 16px; }
-        button {
-            flex: 1; padding: 14px; border: none; border-radius: 14px;
-            font-size: 15px; cursor: pointer; transition: all 0.2s; font-weight: 600;
-        }
-        button:active { transform: scale(0.97); }
-        .btn-primary { background: linear-gradient(135deg, #feca57, #ff9ff3); color: #1a1a2e; }
-        .btn-outline { background: transparent; border: 2px solid #333; color: #e0e0e0; }
-
-        .toast {
-            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
-            background: #2a2a3e; color: #e0e0e0; padding: 12px 24px; border-radius: 30px;
-            font-size: 14px; z-index: 100; opacity: 0; transition: opacity 0.3s;
-            pointer-events: none; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-        .toast.show { opacity: 1; }
-        .footer { text-align: center; padding: 20px; color: #444; font-size: 11px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <span class="icon">🕯</span>
-            <h1>Строчки - одиночки</h1>
-            <p>Создай красивую карточку</p>
-        </div>
-
-        <!-- Табы -->
-        <div class="tabs">
-            <button class="tab active" data-panel="editor"><span class="tab-emoji">🎨</span>Ред.</button>
-            <button class="tab" data-panel="prompts"><span class="tab-emoji">💡</span>Идеи</button>
-            <button class="tab" data-panel="history"><span class="tab-emoji">📋</span>Ист.</button>
-        </div>
-
-        <!-- Редактор -->
-        <div class="panel active" id="panel-editor">
-            <div class="preview">
-                <div class="card bg-sunset font-serif size-medium align-center" id="card">
-                    <div class="card-decoration" id="cardDecor">✧ ✧ ✧</div>
-                    <div class="card-date" id="cardDate"></div>
-                    <div class="card-sticker" id="cardSticker" style="display:none"></div>
-                    <div class="card-text" id="cardText">Напиши свою строчку...</div>
-                    <div class="card-divider"></div>
-                    <div class="card-author" id="cardAuthor">— Автор</div>
-                    <div class="card-channel">Строчки - одиночки 🕯</div>
+    <div class="game-container">
+        <div class="game-header">
+            <div class="player-info">
+                <div class="player-avatar">P1</div>
+                <div>
+                    <div class="player-name">Игрок 1</div>
+                    <div class="player-status">Белые</div>
                 </div>
             </div>
-
-            <textarea id="textInput" placeholder="О чём твоя строчка? Пиши..." maxlength="350" rows="3"></textarea>
-            <div class="char-count"><span id="charCount">0</span>/350</div>
-
-            <div class="section">
-                <div class="section-label">🎨 Фон</div>
-                <div class="options" id="bgOptions">
-                    <div class="option active" data-bg="bg-sunset"><div class="swatch" style="background:linear-gradient(160deg,#1a0a2e,#c94b4b,#f0a050)"></div><span class="opt-label">Закат</span></div>
-                    <div class="option" data-bg="bg-night"><div class="swatch" style="background:linear-gradient(160deg,#0a0a1a,#1a1a3e,#2d1b69)"></div><span class="opt-label">Ночь</span></div>
-                    <div class="option" data-bg="bg-ocean"><div class="swatch" style="background:linear-gradient(160deg,#0c1b33,#26547c,#4299e1)"></div><span class="opt-label">Океан</span></div>
-                    <div class="option" data-bg="bg-forest"><div class="swatch" style="background:linear-gradient(160deg,#0d1f0d,#2d5a2d,#4a7c4a)"></div><span class="opt-label">Лес</span></div>
-                    <div class="option" data-bg="bg-rose"><div class="swatch" style="background:linear-gradient(160deg,#2d0a1a,#8b5a6a,#c4909a)"></div><span class="opt-label">Роза</span></div>
-                    <div class="option" data-bg="bg-dark"><div class="swatch" style="background:linear-gradient(160deg,#050505,#1a1a1a,#252525)"></div><span class="opt-label">Тьма</span></div>
-                    <div class="option" data-bg="bg-light"><div class="swatch" style="background:linear-gradient(160deg,#e8e8e8,#fafafa,#fff)"></div><span class="opt-label">Свет</span></div>
-                    <div class="option" data-bg="bg-gold"><div class="swatch" style="background:linear-gradient(160deg,#1a0f00,#8b6914,#d4af37)"></div><span class="opt-label">Золото</span></div>
-                    <div class="option" data-bg="bg-lavender"><div class="swatch" style="background:linear-gradient(160deg,#1a0a2e,#8b6baa,#c9b8e8)"></div><span class="opt-label">Лаванда</span></div>
-                    <div class="option" data-bg="bg-cherry"><div class="swatch" style="background:linear-gradient(160deg,#1a0a0a,#8b2d2d,#c94b4b)"></div><span class="opt-label">Вишня</span></div>
-                    <div class="option" data-bg="bg-mint"><div class="swatch" style="background:linear-gradient(160deg,#0a1a1a,#2d5a5a,#4b8b8b)"></div><span class="opt-label">Мята</span></div>
-                    <div class="option" data-bg="bg-sunrise"><div class="swatch" style="background:linear-gradient(160deg,#1a0f00,#c97a2d,#f0c050)"></div><span class="opt-label">Рассвет</span></div>
+            <div class="player-info">
+                <div>
+                    <div class="player-name">Игрок 2</div>
+                    <div class="player-status">Черные</div>
                 </div>
-            </div>
-
-            <div class="section">
-                <div class="section-label">✍️ Шрифт</div>
-                <div class="options" id="fontOptions">
-                    <div class="option active" data-font="font-serif"><div class="font-sample" style="font-family:Georgia,serif">A</div><span class="opt-label">Классика</span></div>
-                    <div class="option" data-font="font-sans"><div class="font-sample" style="font-family:'Helvetica Neue',sans-serif">A</div><span class="opt-label">Чистый</span></div>
-                    <div class="option" data-font="font-hand"><div class="font-sample" style="font-family:'Brush Script MT',cursive">A</div><span class="opt-label">Рукопись</span></div>
-                    <div class="option" data-font="font-mono"><div class="font-sample" style="font-family:'Courier New',monospace">A</div><span class="opt-label">Печать</span></div>
-                    <div class="option" data-font="font-narrow"><div class="font-sample" style="font-family:'Arial Narrow',sans-serif">A</div><span class="opt-label">Узкий</span></div>
-                    <div class="option" data-font="font-wide"><div class="font-sample" style="font-family:'Gill Sans',sans-serif">A</div><span class="opt-label">Широкий</span></div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-label">📏 Размер</div>
-                <div class="options" id="sizeOptions">
-                    <div class="option" data-size="size-small"><span class="opt-label">S</span></div>
-                    <div class="option active" data-size="size-medium"><span class="opt-label">M</span></div>
-                    <div class="option" data-size="size-large"><span class="opt-label">L</span></div>
-                    <div class="option" data-size="size-xlarge"><span class="opt-label">XL</span></div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-label">↔️ Выравнивание</div>
-                <div class="options" id="alignOptions">
-                    <div class="option" data-align="align-left"><span class="opt-label">←</span></div>
-                    <div class="option active" data-align="align-center"><span class="opt-label">↔</span></div>
-                    <div class="option" data-align="align-right"><span class="opt-label">→</span></div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-label">✨ Украшение</div>
-                <div class="options" id="decorOptions">
-                    <div class="option active" data-decor="✧ ✧ ✧"><span class="opt-label">✧</span></div>
-                    <div class="option" data-decor="• • •"><span class="opt-label">•</span></div>
-                    <div class="option" data-decor="~ ~ ~"><span class="opt-label">~</span></div>
-                    <div class="option" data-decor="— ✦ —"><span class="opt-label">✦</span></div>
-                    <div class="option" data-decor=""><span class="opt-label">✕</span></div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="section-label">🪄 Стикер</div>
-                <div class="options" id="stickerOptions">
-                    <div class="option" data-sticker=""><span class="opt-label">✕</span></div>
-                    <div class="option" data-sticker="🕯"><span class="opt-label">🕯</span></div>
-                    <div class="option" data-sticker="🌟"><span class="opt-label">🌟</span></div>
-                    <div class="option" data-sticker="💫"><span class="opt-label">💫</span></div>
-                    <div class="option" data-sticker="🌙"><span class="opt-label">🌙</span></div>
-                    <div class="option" data-sticker="✨"><span class="opt-label">✨</span></div>
-                    <div class="option" data-sticker="🖤"><span class="opt-label">🖤</span></div>
-                    <div class="option" data-sticker="🔥"><span class="opt-label">🔥</span></div>
-                    <div class="option" data-sticker="💔"><span class="opt-label">💔</span></div>
-                </div>
-            </div>
-
-            <div class="section">
-                <div class="toggle-row">
-                    <span>Кавычки «»</span>
-                    <div class="toggle active" id="toggleQuotes" onclick="toggleQuotes()"></div>
-                </div>
-                <div class="toggle-row">
-                    <span>Разделитель</span>
-                    <div class="toggle active" id="toggleDivider" onclick="toggleDivider()"></div>
-                </div>
-                <div class="toggle-row">
-                    <span>Дата</span>
-                    <div class="toggle active" id="toggleDate" onclick="toggleDate()"></div>
-                </div>
-            </div>
-
-            <div class="buttons">
-                <button class="btn-primary" id="saveBtn">💾 Сохранить</button>
-                <button class="btn-outline" id="shareBtn">📤 Поделиться</button>
+                <div class="player-avatar">P2</div>
             </div>
         </div>
-
-        <!-- Идеи -->
-        <div class="panel" id="panel-prompts">
-            <div class="prompt-card">
-                <div class="prompt-text" id="promptText">Загрузка...</div>
-                <button class="prompt-btn" id="newPromptBtn">🎲 Другая тема</button>
-            </div>
-            <div class="section-label" style="margin-top:16px;">📝 Популярные темы</div>
-            <div class="options" id="topicOptions" style="margin-top:8px">
-                <div class="option" data-topic="любовь"><span class="opt-label">💔 Любовь</span></div>
-                <div class="option" data-topic="одиночество"><span class="opt-label">🌧 Один-во</span></div>
-                <div class="option" data-topic="ночь"><span class="opt-label">🌙 Ночь</span></div>
-                <div class="option" data-topic="надежда"><span class="opt-label">🌟 Надежда</span></div>
-                <div class="option" data-topic="тишина"><span class="opt-label">🤫 Тишина</span></div>
-                <div class="option" data-topic="осень"><span class="opt-label">🍂 Осень</span></div>
-                <div class="option" data-topic="память"><span class="opt-label">📷 Память</span></div>
-                <div class="option" data-topic="свобода"><span class="opt-label">🕊 Свобода</span></div>
-            </div>
+        
+        <div class="board-container">
+            <div id="board"></div>
         </div>
-
-        <!-- История -->
-        <div class="panel" id="panel-history">
-            <div id="historyList"></div>
+        
+        <div class="game-info">
+            <div class="turn-indicator">
+                <div>Ход:</div>
+                <div class="turn-dot white" id="turnDot"></div>
+            </div>
+            <div>Счет: <span id="score">0 - 0</span></div>
         </div>
-
-        <div class="toast" id="toast"></div>
-        <div class="footer">Строчки - одиночки 🕯</div>
     </div>
-
+    
     <script>
-    // ============ ОСНОВНЫЕ ПЕРЕМЕННЫЕ ============
-    const card = document.getElementById('card');
-    const cardText = document.getElementById('cardText');
-    const cardAuthor = document.getElementById('cardAuthor');
-    const cardDecor = document.getElementById('cardDecor');
-    const cardDate = document.getElementById('cardDate');
-    const cardSticker = document.getElementById('cardSticker');
-    const textInput = document.getElementById('textInput');
-    const charCount = document.getElementById('charCount');
-    const toast = document.getElementById('toast');
-    const promptText = document.getElementById('promptText');
-
-    let currentBg = 'bg-sunset';
-    let currentFont = 'font-serif';
-    let currentSize = 'size-medium';
-    let currentAlign = 'align-center';
-    let currentDecor = '✧ ✧ ✧';
-    let currentSticker = '';
-    let showQuotes = true;
-    let showDivider = true;
-    let showDate = true;
-    let history = [];
-
-    // Градиенты для canvas
-    const bgGradients = {
-        'bg-sunset': ['#1a0a2e', '#5b2c56', '#c94b4b', '#f0a050'],
-        'bg-night': ['#0a0a1a', '#16213e', '#1a1a3e', '#2d1b69'],
-        'bg-ocean': ['#0c1b33', '#1b3a4b', '#26547c', '#4299e1'],
-        'bg-forest': ['#0d1f0d', '#1a3a1a', '#2d5a2d', '#4a7c4a'],
-        'bg-rose': ['#2d0a1a', '#5c2d4a', '#8b5a6a', '#c4909a'],
-        'bg-dark': ['#050505', '#111111', '#1a1a1a', '#252525'],
-        'bg-light': ['#e8e8e8', '#f2f2f2', '#fafafa', '#ffffff'],
-        'bg-gold': ['#1a0f00', '#3d2800', '#8b6914', '#d4af37'],
-        'bg-lavender': ['#1a0a2e', '#4a2d5c', '#8b6baa', '#c9b8e8'],
-        'bg-cherry': ['#1a0a0a', '#4a1a1a', '#8b2d2d', '#c94b4b'],
-        'bg-mint': ['#0a1a1a', '#1a3a3a', '#2d5a5a', '#4b8b8b'],
-        'bg-sunrise': ['#1a0f00', '#5c3a1a', '#c97a2d', '#f0c050']
-    };
-
-    const fontFamilies = {
-        'font-serif': 'Georgia, serif',
-        'font-sans': 'Arial, sans-serif',
-        'font-hand': 'Brush Script MT, cursive',
-        'font-mono': 'Courier New, monospace',
-        'font-narrow': 'Arial Narrow, sans-serif',
-        'font-wide': 'Gill Sans, sans-serif'
-    };
-
-    const fontSizes = {
-        'size-small': 28,
-        'size-medium': 36,
-        'size-large': 44,
-        'size-xlarge': 52
-    };
-
-    const textColors = {
-        'bg-light': '#1a1a1a'
-    };
-
-    // ============ ИНИЦИАЛИЗАЦИЯ ============
-    let authorName = 'Автор';
-    if (window.Telegram && window.Telegram.WebApp) {
         const tg = window.Telegram.WebApp;
-        const user = tg.initDataUnsafe?.user;
-        if (user?.first_name) authorName = user.first_name;
-        tg.ready();
-    }
-    cardAuthor.textContent = `— ${authorName}`;
-
-    const today = new Date();
-    cardDate.textContent = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
-
-    // Загружаем историю
-    try {
-        history = JSON.parse(localStorage.getItem('candle_history') || '[]');
-    } catch(e) { history = []; }
-
-    // ============ ПРОМПТЫ ============
-    const prompts = [
-        "Что ты чувствуешь прямо сейчас?",
-        "Опиши момент, который хотел бы запомнить навсегда",
-        "Напиши послание тому, кого больше нет рядом",
-        "Что бы ты сказал себе десять лет назад?",
-        "Одна фраза, которая изменила твою жизнь",
-        "Самое красивое, что ты видел в этом месяце",
-        "Напиши о тишине",
-        "Что для тебя значит свобода?",
-        "Опиши свой идеальный день",
-        "Строчка, которую ты никогда никому не говорил"
-    ];
-
-    function randomPrompt() {
-        const p = prompts[Math.floor(Math.random() * prompts.length)];
-        promptText.textContent = `«${p}»`;
-        textInput.placeholder = p;
-    }
-    randomPrompt();
-
-    // ============ УВЕДОМЛЕНИЯ ============
-    function showToast(msg) {
-        toast.textContent = msg;
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2500);
-    }
-
-    // ============ ОБНОВЛЕНИЕ КАРТОЧКИ ============
-    function updateCard() {
-        const text = textInput.value || 'Напиши свою строчку...';
-        cardText.textContent = text;
-        charCount.textContent = textInput.value.length;
-
-        const allBg = Object.keys(bgGradients);
-        allBg.forEach(b => card.classList.remove(b));
-        card.classList.add(currentBg);
-
-        const allFonts = Object.keys(fontFamilies);
-        allFonts.forEach(f => card.classList.remove(f));
-        card.classList.add(currentFont);
-
-        const allSizes = Object.keys(fontSizes);
-        allSizes.forEach(s => card.classList.remove(s));
-        card.classList.add(currentSize);
-
-        const allAligns = ['align-left','align-center','align-right'];
-        allAligns.forEach(a => card.classList.remove(a));
-        card.classList.add(currentAlign);
-
-        cardDecor.textContent = currentDecor;
-        cardSticker.style.display = currentSticker ? 'block' : 'none';
-        if (currentSticker) cardSticker.textContent = currentSticker;
+        tg.expand();
+        tg.setBackgroundColor('#1e3c72');
         
-        if (showQuotes) cardText.classList.remove('no-quotes');
-        else cardText.classList.add('no-quotes');
+        // Получение параметров из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const gameId = urlParams.get('game_id');
+        const playerNumber = parseInt(urlParams.get('player'));
+        const isBotGame = urlParams.get('bot') === 'true';
         
-        document.querySelector('.card-divider').style.display = showDivider ? 'block' : 'none';
-        cardDate.style.display = showDate ? 'block' : 'none';
-    }
-
-    textInput.addEventListener('input', updateCard);
-
-    // ============ ВЫБОР ОПЦИЙ ============
-    function setupOptions(containerId, callback) {
-        document.querySelectorAll(`#${containerId} .option`).forEach(opt => {
-            opt.addEventListener('click', () => {
-                document.querySelectorAll(`#${containerId} .option`).forEach(o => o.classList.remove('active'));
-                opt.classList.add('active');
-                callback(opt);
-                updateCard();
-            });
-        });
-    }
-
-    setupOptions('bgOptions', (opt) => { currentBg = opt.dataset.bg; });
-    setupOptions('fontOptions', (opt) => { currentFont = opt.dataset.font; });
-    setupOptions('sizeOptions', (opt) => { currentSize = opt.dataset.size; });
-    setupOptions('alignOptions', (opt) => { currentAlign = opt.dataset.align; });
-    setupOptions('decorOptions', (opt) => { currentDecor = opt.dataset.decor; });
-    setupOptions('stickerOptions', (opt) => { currentSticker = opt.dataset.sticker; });
-
-    // ============ ПЕРЕКЛЮЧАТЕЛИ ============
-    function toggleQuotes() {
-        showQuotes = !showQuotes;
-        document.getElementById('toggleQuotes').classList.toggle('active', showQuotes);
-        updateCard();
-    }
-    function toggleDivider() {
-        showDivider = !showDivider;
-        document.getElementById('toggleDivider').classList.toggle('active', showDivider);
-        updateCard();
-    }
-    function toggleDate() {
-        showDate = !showDate;
-        document.getElementById('toggleDate').classList.toggle('active', showDate);
-        updateCard();
-    }
-
-    // ============ ТЕМЫ ============
-    document.querySelectorAll('#topicOptions .option').forEach(opt => {
-        opt.addEventListener('click', () => {
-            textInput.placeholder = `Напиши о теме «${opt.dataset.topic}»...`;
-            promptText.textContent = `Тема: ${opt.dataset.topic}`;
-        });
-    });
-
-    document.getElementById('newPromptBtn').addEventListener('click', randomPrompt);
-
-    // ============ ТАБЫ ============
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-            tab.classList.add('active');
-            document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
-            if (tab.dataset.panel === 'history') renderHistory();
-        });
-    });
-
-    // ============ ИСТОРИЯ ============
-    function saveToHistory(text) {
-        history.push({
-            text, bg: currentBg, font: currentFont, size: currentSize,
-            align: currentAlign, decor: currentDecor, sticker: currentSticker,
-            showQuotes, showDivider, showDate,
-            date: new Date().toLocaleDateString('ru-RU')
-        });
-        if (history.length > 30) history = history.slice(-30);
-        try {
-            localStorage.setItem('candle_history', JSON.stringify(history));
-        } catch(e) {}
-    }
-
-    function renderHistory() {
-        const list = document.getElementById('historyList');
-        if (history.length === 0) {
-            list.innerHTML = '<div class="history-empty">📋 Здесь будут твои сохранённые карточки</div>';
-            return;
-        }
-        list.innerHTML = history.slice().reverse().map((h, i) => `
-            <div class="history-item" onclick="loadHistory(${history.length - 1 - i})">
-                <div class="history-thumb" style="background:linear-gradient(160deg, ${bgGradients[h.bg] ? bgGradients[h.bg].join(',') : '#1a1a2e'})">🕯</div>
-                <div class="history-text">
-                    <div class="ht-title">${(h.text || 'Без текста').substring(0, 50)}${h.text?.length > 50 ? '...' : ''}</div>
-                    <div>${h.date || ''}</div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    window.loadHistory = function(index) {
-        const h = history[index];
-        if (!h) return;
-        textInput.value = h.text || '';
-        currentBg = h.bg || 'bg-sunset';
-        currentFont = h.font || 'font-serif';
-        currentSize = h.size || 'size-medium';
-        currentAlign = h.align || 'align-center';
-        currentDecor = h.decor || '✧ ✧ ✧';
-        currentSticker = h.sticker || '';
-        showQuotes = h.showQuotes !== false;
-        showDivider = h.showDivider !== false;
-        showDate = h.showDate !== false;
-
-        document.getElementById('toggleQuotes').classList.toggle('active', showQuotes);
-        document.getElementById('toggleDivider').classList.toggle('active', showDivider);
-        document.getElementById('toggleDate').classList.toggle('active', showDate);
-
-        updateCard();
-        document.querySelector('.tab[data-panel="editor"]').click();
-        showToast('Карточка загружена ✨');
-    };
-
-    // ============ CANVAS ГЕНЕРАЦИЯ ============
-    function generateCardImage() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
+        // Состояние игры
+        let board = [];
+        let selectedPiece = null;
+        let validMoves = [];
+        let currentPlayer = 'white'; // белые ходят первыми
+        let playerColor = playerNumber === 1 ? 'white' : 'black';
+        let moveHistory = [];
+        let capturedPieces = { white: 0, black: 0 };
+        let isGameOver = false;
         
-        const width = 1080;
-        const height = 1440;
-        canvas.width = width;
-        canvas.height = height;
-
-        // Фон
-        const gradient = ctx.createLinearGradient(0, 0, width, height);
-        const colors = bgGradients[currentBg] || bgGradients['bg-sunset'];
-        const step = 1 / (colors.length - 1);
-        colors.forEach((color, i) => {
-            gradient.addColorStop(i * step, color);
-        });
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, width, height);
-
-        // Цвет текста
-        const textColor = currentBg === 'bg-light' ? '#1a1a1a' : '#ffffff';
-
-        // Декорация
-        if (currentDecor) {
-            ctx.fillStyle = textColor;
-            ctx.globalAlpha = 0.4;
-            ctx.font = '24px Georgia, serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(currentDecor, width/2, 100);
-            ctx.globalAlpha = 1;
-        }
-
-        // Дата
-        if (showDate) {
-            ctx.fillStyle = textColor;
-            ctx.globalAlpha = 0.3;
-            ctx.font = '20px Arial, sans-serif';
-            ctx.textAlign = 'right';
-            const dateStr = `${today.getDate()}.${today.getMonth()+1}.${today.getFullYear()}`;
-            ctx.fillText(dateStr, width - 40, 80);
-            ctx.globalAlpha = 1;
-        }
-
-        // Текст
-        const text = textInput.value.trim() || 'Напиши свою строчку...';
-        const displayText = showQuotes ? `«${text}»` : text;
-        const fontFamily = fontFamilies[currentFont] || fontFamilies['font-serif'];
-        const fontSize = fontSizes[currentSize] || fontSizes['size-medium'];
-        
-        ctx.fillStyle = textColor;
-        ctx.font = `italic ${fontSize}px ${fontFamily}`;
-        ctx.textAlign = currentAlign === 'align-left' ? 'left' : currentAlign === 'align-right' ? 'right' : 'center';
-        
-        const textX = currentAlign === 'align-left' ? 80 : currentAlign === 'align-right' ? width - 80 : width/2;
-        const textY = height/2 - 40;
-
-        // Перенос строк
-        const words = displayText.split(' ');
-        let lines = [];
-        let currentLine = '';
-        
-        for (let word of words) {
-            const testLine = currentLine ? currentLine + ' ' + word : word;
-            const metrics = ctx.measureText(testLine);
-            if (metrics.width > width - 160 && currentLine) {
-                lines.push(currentLine);
-                currentLine = word;
-            } else {
-                currentLine = testLine;
+        // Инициализация доски
+        function initBoard() {
+            board = Array(8).fill(null).map(() => Array(8).fill(null));
+            
+            // Расстановка шашек
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    if ((row + col) % 2 === 1) { // темные клетки
+                        if (row < 3) {
+                            board[row][col] = { color: 'black', isKing: false };
+                        } else if (row > 4) {
+                            board[row][col] = { color: 'white', isKing: false };
+                        }
+                    }
+                }
             }
         }
-        if (currentLine) lines.push(currentLine);
-
-        const lineHeight = fontSize * 1.4;
-        const startY = textY - (lines.length - 1) * lineHeight / 2;
         
-        lines.forEach((line, i) => {
-            ctx.fillText(line, textX, startY + i * lineHeight);
-        });
-
-        // Разделитель
-        if (showDivider) {
-            ctx.fillStyle = textColor;
-            ctx.globalAlpha = 0.4;
-            ctx.fillRect(width/2 - 40, startY + lines.length * lineHeight + 30, 80, 2);
-            ctx.globalAlpha = 1;
-        }
-
-        // Автор
-        ctx.fillStyle = textColor;
-        ctx.globalAlpha = 0.7;
-        ctx.font = '24px Arial, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(`— ${authorName}`, width/2, startY + lines.length * lineHeight + 80);
-        ctx.globalAlpha = 1;
-
-        // Стикер
-        if (currentSticker) {
-            ctx.font = '64px Arial, sans-serif';
-            ctx.globalAlpha = 0.6;
-            ctx.fillText(currentSticker, width - 100, height - 180);
-            ctx.globalAlpha = 1;
-        }
-
-        // Канал
-        ctx.fillStyle = textColor;
-        ctx.globalAlpha = 0.4;
-        ctx.font = '20px Arial, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('Строчки - одиночки 🕯', width/2, height - 60);
-        ctx.globalAlpha = 1;
-
-        return canvas;
-    }
-
-    // ============ СОХРАНИТЬ ============
-    document.getElementById('saveBtn').addEventListener('click', async () => {
-        const text = textInput.value.trim();
-        if (!text) { showToast('Напиши строчку ✏️'); return; }
-
-        showToast('Создаю картинку...');
-
-        try {
-            const canvas = generateCardImage();
+        // Отрисовка доски
+        function renderBoard() {
+            const boardElement = document.getElementById('board');
+            boardElement.innerHTML = '';
             
-            canvas.toBlob((blob) => {
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `strochka_${Date.now()}.png`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-                
-                saveToHistory(text);
-                showToast('💾 Сохранено! Найди в загрузках');
-            }, 'image/png');
-
-        } catch (err) {
-            console.error(err);
-            showToast('❌ Ошибка. Попробуй ещё раз');
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = `cell ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    
+                    // Подсветка последнего хода
+                    if (moveHistory.length > 0) {
+                        const lastMove = moveHistory[moveHistory.length - 1];
+                        if ((lastMove.from.row === row && lastMove.from.col === col) ||
+                            (lastMove.to.row === row && lastMove.to.col === col)) {
+                            cell.classList.add('last-move');
+                        }
+                    }
+                    
+                    // Подсветка выбранной шашки
+                    if (selectedPiece && 
+                        selectedPiece.row === row && 
+                        selectedPiece.col === col) {
+                        cell.classList.add('selected');
+                    }
+                    
+                    // Подсветка доступных ходов
+                    if (validMoves.some(move => move.to.row === row && move.to.col === col)) {
+                        cell.classList.add('valid-move');
+                    }
+                    
+                    // Добавление шашки
+                    if (board[row][col]) {
+                        const piece = document.createElement('div');
+                        piece.className = `piece ${board[row][col].color}`;
+                        if (board[row][col].isKing) {
+                            piece.classList.add('king');
+                        }
+                        if (selectedPiece && 
+                            selectedPiece.row === row && 
+                            selectedPiece.col === col) {
+                            piece.classList.add('selected');
+                        }
+                        piece.addEventListener('click', () => onPieceClick(row, col));
+                        cell.appendChild(piece);
+                    }
+                    
+                    cell.addEventListener('click', () => onCellClick(row, col));
+                    boardElement.appendChild(cell);
+                }
+            }
+            
+            updateTurnIndicator();
         }
-    });
-
-    // ============ ПОДЕЛИТЬСЯ ============
-    document.getElementById('shareBtn').addEventListener('click', async () => {
-        const text = textInput.value.trim();
-        if (!text) { showToast('Напиши строчку ✏️'); return; }
-
-        try {
-            const canvas = generateCardImage();
-
-            canvas.toBlob(async (blob) => {
-                const file = new File([blob], 'strochka.png', { type: 'image/png' });
-
-                // Пробуем Share API
-                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                    try {
-                        await navigator.share({
-                            files: [file],
-                            title: 'Моя строчка',
-                            text: 'Создано в «Строчки - одиночки» 🕯'
+        
+        // Получение возможных ходов для шашки
+        function getValidMoves(row, col) {
+            const piece = board[row][col];
+            if (!piece || piece.color !== currentPlayer) return [];
+            
+            const moves = [];
+            const directions = piece.isKing ? [-1, 1] : (piece.color === 'white' ? [-1] : [1]);
+            const captureDirections = [-1, 1];
+            
+            // Проверка обычных ходов
+            for (const dr of directions) {
+                for (const dc of captureDirections) {
+                    const newRow = row + dr;
+                    const newCol = col + dc;
+                    
+                    if (isValidPosition(newRow, newCol) && !board[newRow][newCol]) {
+                        moves.push({
+                            from: { row, col },
+                            to: { row: newRow, col: newCol },
+                            captures: []
                         });
-                        saveToHistory(text);
-                        return;
-                    } catch (e) {
-                        if (e.name === 'AbortError') return;
                     }
                 }
-                
-                // Fallback — в Telegram WebView
-                if (window.Telegram && window.Telegram.WebApp) {
-                    try {
-                        const url = URL.createObjectURL(blob);
+            }
+            
+            // Проверка взятия
+            for (const dr of captureDirections) {
+                for (const dc of captureDirections) {
+                    const captureRow = row + dr;
+                    const captureCol = col + dc;
+                    const landRow = row + dr * 2;
+                    const landCol = col + dc * 2;
+                    
+                    if (isValidPosition(captureRow, captureCol) && 
+                        isValidPosition(landRow, landCol) &&
+                        board[captureRow][captureCol] && 
+                        board[captureRow][captureCol].color !== piece.color &&
+                        !board[landRow][landCol]) {
                         
-                        // Пытаемся открыть ссылку на изображение
-                        const tg = window.Telegram.WebApp;
-                        
-                        // Создаём data URL
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                            const dataUrl = reader.result;
-                            
-                            // Открываем в новой вкладке
-                            window.open(dataUrl, '_blank');
-                            
-                            saveToHistory(text);
-                            showToast('📤 Открыл картинку. Сохрани её и отправь');
-                        };
-                        reader.readAsDataURL(blob);
-                        return;
-                    } catch (e) {
-                        console.error(e);
+                        moves.push({
+                            from: { row, col },
+                            to: { row: landRow, col: landCol },
+                            captures: [{ row: captureRow, col: captureCol }]
+                        });
                     }
                 }
-                
-                // Скачиваем
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `strochka_${Date.now()}.png`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-                
-                saveToHistory(text);
-                showToast('💾 Сохранено!');
-            }, 'image/png');
-
-        } catch (err) {
-            console.error(err);
-            showToast('❌ Ошибка');
+            }
+            
+            return moves;
         }
-    });
-
-    updateCard();
-</script>
+        
+        // Проверка позиции
+        function isValidPosition(row, col) {
+            return row >= 0 && row < 8 && col >= 0 && col < 8;
+        }
+        
+        // Обработка клика по шашке
+        function onPieceClick(row, col) {
+            if (isGameOver || currentPlayer !== playerColor) return;
+            
+            const piece = board[row][col];
+            if (piece && piece.color === playerColor) {
+                selectedPiece = { row, col };
+                validMoves = getValidMoves(row, col);
+                renderBoard();
+            }
+        }
+        
+        // Обработка клика по клетке
+        function onCellClick(row, col) {
+            if (isGameOver || currentPlayer !== playerColor) return;
+            
+            // Если есть выбранная шашка и клик по доступному ходу
+            const move = validMoves.find(m => m.to.row === row && m.to.col === col);
+            if (move) {
+                makeMove(move);
+            } else {
+                // Отмена выбора
+                selectedPiece = null;
+                validMoves = [];
+                renderBoard();
+            }
+        }
+        
+        // Выполнение хода
+        function makeMove(move) {
+            // Перемещение шашки
+            const piece = board[move.from.row][move.from.col];
+            board[move.to.row][move.to.col] = piece;
+            board[move.from.row][move.from.col] = null;
+            
+            // Взятие шашек
+            move.captures.forEach(capture => {
+                const capturedPiece = board[capture.row][capture.col];
+                if (capturedPiece) {
+                    capturedPieces[capturedPiece.color]++;
+                }
+                board[capture.row][capture.col] = null;
+            });
+            
+            // Превращение в дамку
+            if ((piece.color === 'white' && move.to.row === 0) ||
+                (piece.color === 'black' && move.to.row === 7)) {
+                piece.isKing = true;
+            }
+            
+            moveHistory.push(move);
+            selectedPiece = null;
+            validMoves = [];
+            
+            // Проверка на победу
+            if (checkWin()) {
+                gameOver();
+                return;
+            }
+            
+            // Переключение хода
+            currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+            
+            // Если игра с ботом и ход бота
+            if (isBotGame && currentPlayer !== playerColor) {
+                setTimeout(() => botMove(), 1000);
+            }
+            
+            renderBoard();
+            updateScore();
+        }
+        
+        // Ход бота
+        function botMove() {
+            const botPieces = [];
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    if (board[row][col] && board[row][col].color === currentPlayer) {
+                        const moves = getValidMoves(row, col);
+                        if (moves.length > 0) {
+                            botPieces.push({ row, col, moves });
+                        }
+                    }
+                }
+            }
+            
+            // Приоритет взятию
+            let captureMoves = [];
+            let normalMoves = [];
+            
+            botPieces.forEach(piece => {
+                piece.moves.forEach(move => {
+                    if (move.captures.length > 0) {
+                        captureMoves.push(move);
+                    } else {
+                        normalMoves.push(move);
+                    }
+                });
+            });
+            
+            const availableMoves = captureMoves.length > 0 ? captureMoves : normalMoves;
+            if (availableMoves.length > 0) {
+                const randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)];
+                makeMove(randomMove);
+            }
+        }
+        
+        // Проверка на победу
+        function checkWin() {
+            const whitePieces = board.flat().filter(p => p && p.color === 'white').length;
+            const blackPieces = board.flat().filter(p => p && p.color === 'black').length;
+            
+            return whitePieces === 0 || blackPieces === 0;
+        }
+        
+        // Конец игры
+        function gameOver() {
+            isGameOver = true;
+            const winner = currentPlayer === 'white' ? 'Белые' : 'Черные';
+            
+            const gameOverElement = document.createElement('div');
+            gameOverElement.className = 'game-over';
+            gameOverElement.innerHTML = `
+                <h2>🏆 Победа!</h2>
+                <p>${winner} выиграли!</p>
+                <br>
+                <button class="btn" onclick="location.reload()">Новая игра</button>
+            `;
+            
+            document.querySelector('.board-container').appendChild(gameOverElement);
+            
+            // Отправка результата в бот
+            tg.sendData(JSON.stringify({
+                game_id: gameId,
+                winner: currentPlayer,
+                moves: moveHistory.length,
+                captured: capturedPieces
+            }));
+        }
+        
+        // Обновление индикатора хода
+        function updateTurnIndicator() {
+            const turnDot = document.getElementById('turnDot');
+            turnDot.className = `turn-dot ${currentPlayer}`;
+        }
+        
+        // Обновление счета
+        function updateScore() {
+            document.getElementById('score').textContent = 
+                `${capturedPieces.black} - ${capturedPieces.white}`;
+        }
+        
+        // Инициализация
+        initBoard();
+        renderBoard();
+        updateScore();
+        
+        // Обработка изменения размера окна
+        window.addEventListener('resize', () => {
+            const board = document.getElementById('board');
+            const size = Math.min(window.innerWidth * 0.8, 500);
+            board.style.width = size + 'px';
+            board.style.height = size + 'px';
+        });
+    </script>
+</body>
+</html>
