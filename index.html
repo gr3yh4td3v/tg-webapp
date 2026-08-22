@@ -162,7 +162,7 @@
             justify-content: center;
             cursor: pointer;
             position: relative;
-            transition: all 0.3s;
+            transition: none;
         }
         
         .cell-dark {
@@ -173,14 +173,9 @@
             background: linear-gradient(145deg, #f4d03f, #e0b830);
         }
         
-        .cell:hover {
-            filter: brightness(1.2);
-        }
-        
         .cell-selected {
             background: linear-gradient(145deg, #ffd700, #ffb700) !important;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
-            animation: glow 1.5s infinite;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
         }
         
         .cell-valid::after {
@@ -321,30 +316,6 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
         
-        .info {
-            text-align: center;
-            margin-top: 10px;
-            font-size: 14px;
-            opacity: 0.9;
-            width: 100%;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(0.8); opacity: 0.5; }
-        }
-        
-        @keyframes glow {
-            0%, 100% { box-shadow: inset 0 0 15px rgba(0,0,0,0.3); }
-            50% { box-shadow: inset 0 0 25px rgba(0,0,0,0.5), 0 0 20px #ffd700; }
-        }
-        
         .modal {
             position: fixed;
             top: 50%;
@@ -393,6 +364,39 @@
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(0.8); opacity: 0.5; }
+        }
+        
+        @keyframes multiCapture {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.2); box-shadow: 0 0 30px rgba(255, 0, 0, 0.8); }
+            50% { transform: scale(1.1); box-shadow: 0 0 50px rgba(255, 100, 0, 0.9); }
+            75% { transform: scale(1.15); box-shadow: 0 0 30px rgba(255, 0, 0, 0.8); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes captureFlash {
+            0% { background: rgba(255, 0, 0, 0.8); }
+            50% { background: rgba(255, 100, 0, 0.9); }
+            100% { background: rgba(255, 0, 0, 0); }
+        }
+        
+        .cell-multi-capture {
+            animation: captureFlash 0.6s ease;
+        }
+        
+        .piece-captured {
+            animation: pieceDisappear 0.5s ease forwards;
+        }
+        
+        @keyframes pieceDisappear {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(0); opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -440,8 +444,6 @@
         <button class="btn btn-secondary" onclick="closeGame()">✖ Закрыть</button>
     </div>
     
-    <div class="info" id="info">Вы играете белыми. Нажмите на шашку для выбора</div>
-    
     <div class="modal" id="modal">
         <h2 id="modalTitle">🏆 Победа!</h2>
         <p id="modalText">Вы выиграли!</p>
@@ -455,7 +457,6 @@
         tg.expand();
         tg.ready();
         
-        // Состояние игры
         let board = [];
         let selectedCell = null;
         let validMoves = [];
@@ -465,13 +466,11 @@
         const playerColor = 'white';
         const aiColor = 'black';
         
-        // Статистика
         let moveCount = 0;
         let captureCount = 0;
         let timerInterval;
         let seconds = 0;
         
-        // Достижения
         const achievements = {
             firstCapture: { name: 'Первое взятие', emoji: '⚔️', unlocked: false },
             tripleCapture: { name: 'Тройное взятие', emoji: '🔥', unlocked: false },
@@ -480,48 +479,69 @@
             quickWin: { name: 'Быстрая победа', emoji: '⚡', unlocked: false }
         };
         
-        // Звуковые эффекты через Web Audio API
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        let audioContext;
         
-        function playSound(type) {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            switch(type) {
-                case 'move':
-                    oscillator.frequency.value = 400;
-                    gainNode.gain.value = 0.3;
-                    oscillator.start();
-                    oscillator.stop(audioContext.currentTime + 0.1);
-                    break;
-                case 'capture':
-                    oscillator.frequency.value = 200;
-                    gainNode.gain.value = 0.5;
-                    oscillator.start();
-                    oscillator.stop(audioContext.currentTime + 0.2);
-                    break;
-                case 'king':
-                    oscillator.frequency.value = 600;
-                    gainNode.gain.value = 0.4;
-                    oscillator.start();
-                    oscillator.stop(audioContext.currentTime + 0.3);
-                    break;
-                case 'win':
-                    oscillator.frequency.value = 800;
-                    gainNode.gain.value = 0.5;
-                    oscillator.start();
-                    setTimeout(() => {
-                        oscillator.frequency.value = 1000;
-                    }, 100);
-                    oscillator.stop(audioContext.currentTime + 0.5);
-                    break;
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
             }
         }
         
-        // Создание частиц
+        function playSound(type) {
+            try {
+                initAudio();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                switch(type) {
+                    case 'move':
+                        oscillator.frequency.value = 400;
+                        gainNode.gain.value = 0.3;
+                        oscillator.start();
+                        oscillator.stop(audioContext.currentTime + 0.1);
+                        break;
+                    case 'capture':
+                        oscillator.frequency.value = 200;
+                        gainNode.gain.value = 0.5;
+                        oscillator.start();
+                        oscillator.stop(audioContext.currentTime + 0.2);
+                        break;
+                    case 'multiCapture':
+                        oscillator.frequency.value = 300;
+                        gainNode.gain.value = 0.6;
+                        oscillator.start();
+                        setTimeout(() => {
+                            oscillator.frequency.value = 500;
+                        }, 100);
+                        setTimeout(() => {
+                            oscillator.frequency.value = 700;
+                        }, 200);
+                        oscillator.stop(audioContext.currentTime + 0.4);
+                        break;
+                    case 'king':
+                        oscillator.frequency.value = 600;
+                        gainNode.gain.value = 0.4;
+                        oscillator.start();
+                        oscillator.stop(audioContext.currentTime + 0.3);
+                        break;
+                    case 'win':
+                        oscillator.frequency.value = 800;
+                        gainNode.gain.value = 0.5;
+                        oscillator.start();
+                        setTimeout(() => {
+                            oscillator.frequency.value = 1000;
+                        }, 100);
+                        oscillator.stop(audioContext.currentTime + 0.5);
+                        break;
+                }
+            } catch(e) {
+                console.log('Audio not available');
+            }
+        }
+        
         function createParticles() {
             const container = document.getElementById('particles');
             for (let i = 0; i < 20; i++) {
@@ -537,7 +557,6 @@
             }
         }
         
-        // Показать достижение
         function showAchievement(name, emoji) {
             const achievementElement = document.getElementById('achievement');
             achievementElement.innerHTML = `${emoji} ${name}`;
@@ -547,7 +566,6 @@
             }, 3000);
         }
         
-        // Проверка достижений
         function checkAchievements(type, data) {
             if (type === 'capture') {
                 if (!achievements.firstCapture.unlocked) {
@@ -573,7 +591,6 @@
             }
         }
         
-        // Инициализация
         function initBoard() {
             board = Array(8).fill(null).map(() => Array(8).fill(null));
             
@@ -590,7 +607,6 @@
             }
         }
         
-        // Отрисовка доски
         function renderBoard() {
             const boardElement = document.getElementById('board');
             boardElement.innerHTML = '';
@@ -604,6 +620,9 @@
                     } else {
                         cell.className = 'cell cell-dark';
                     }
+                    
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
                     
                     if (selectedCell && selectedCell.row === row && selectedCell.col === col) {
                         cell.classList.add('cell-selected');
@@ -646,21 +665,9 @@
                 }
             }
             
-            updateStatus();
             updateStats();
         }
         
-        // Обновление статуса
-        function updateStatus() {
-            const statusElement = document.getElementById('status');
-            if (gameOver) {
-                statusElement.textContent = currentPlayer === 'white' ? '🏆 Вы победили!' : '🤖 ИИ победил!';
-            } else {
-                statusElement.textContent = currentPlayer === 'white' ? 'Ход: Вы (белые)' : 'Ход: ИИ (черные)';
-            }
-        }
-        
-        // Обновление статистики
         function updateStats() {
             document.getElementById('moveCount').textContent = moveCount;
             document.getElementById('captureCount').textContent = captureCount;
@@ -675,8 +682,8 @@
             document.getElementById('aiCard').className = 'player-card' + (currentPlayer === 'black' ? ' active' : '');
         }
         
-        // Таймер
         function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 seconds++;
                 const minutes = Math.floor(seconds / 60);
@@ -687,20 +694,17 @@
             }, 1000);
         }
         
-        // Показать модальное окно
         function showModal(title, text) {
             document.getElementById('modalTitle').textContent = title;
             document.getElementById('modalText').textContent = text;
             document.getElementById('modal').style.display = 'block';
         }
         
-        // Скрыть модальное окно
         function hideModal() {
             document.getElementById('modal').style.display = 'none';
             newGame();
         }
         
-        // Получение ВСЕХ возможных взятий для игрока
         function getAllCaptures(color) {
             const captures = [];
             for (let row = 0; row < 8; row++) {
@@ -714,7 +718,6 @@
             return captures;
         }
         
-        // Получение взятий для конкретной шашки
         function getCaptureMoves(row, col) {
             const piece = board[row][col];
             if (!piece) return [];
@@ -794,7 +797,6 @@
             return moves;
         }
         
-        // Поиск множественных взятий
         function findMultiCaptures(move, originalPiece) {
             const results = [move];
             const lastPos = move.to;
@@ -888,7 +890,6 @@
             return results;
         }
         
-        // Получение обычных ходов
         function getNormalMoves(row, col) {
             const piece = board[row][col];
             if (!piece) return [];
@@ -940,7 +941,6 @@
             return moves;
         }
         
-        // Получение всех ходов
         function getAllMoves(color) {
             const allCaptures = getAllCaptures(color);
             if (allCaptures.length > 0) {
@@ -958,7 +958,6 @@
             return normalMoves;
         }
         
-        // Получение ходов для конкретной шашки
         function getValidMoves(row, col) {
             const piece = board[row][col];
             if (!piece || piece.color !== currentPlayer) return [];
@@ -971,12 +970,10 @@
             return getNormalMoves(row, col);
         }
         
-        // Проверка позиции
         function isValid(row, col) {
             return row >= 0 && row < 8 && col >= 0 && col < 8;
         }
         
-        // Обработка клика
         function onCellClick(row, col) {
             if (gameOver || isAIThinking || currentPlayer !== playerColor) return;
             
@@ -990,103 +987,115 @@
             if (piece && piece.color === playerColor) {
                 selectedCell = { row, col };
                 validMoves = getValidMoves(row, col);
-                
-                if (validMoves.length === 0) {
-                    document.getElementById('info').textContent = 'Нет доступных ходов для этой шашки';
-                } else if (validMoves[0].captures.length > 0) {
-                    document.getElementById('info').textContent = 'Обязательное взятие! Выберите красную клетку';
-                } else {
-                    document.getElementById('info').textContent = 'Выберите зеленую клетку для хода';
-                }
             } else {
                 selectedCell = null;
                 validMoves = [];
-                document.getElementById('info').textContent = 'Нажмите на свою шашку';
             }
             
             renderBoard();
         }
         
-        // Выполнение хода
         function makeMove(move) {
             const piece = board[move.from.row][move.from.col];
             
             board[move.to.row][move.to.col] = piece;
             board[move.from.row][move.from.col] = null;
             
-            move.captures.forEach(capture => {
-                board[capture.row][capture.col] = null;
-                captureCount++;
-                playSound('capture');
-            });
-            
-            if (move.captures.length > 0) {
-                checkAchievements('capture', move.captures.length);
-            } else {
-                playSound('move');
+            if (move.captures.length > 1) {
+                move.captures.forEach((capture) => {
+                    const cell = document.querySelector(`[data-row="${capture.row}"][data-col="${capture.col}"]`);
+                    if (cell) {
+                        const capturedPiece = cell.querySelector('.piece');
+                        if (capturedPiece) {
+                            capturedPiece.classList.add('piece-captured');
+                        }
+                        cell.classList.add('cell-multi-capture');
+                    }
+                });
+                
+                const pieceCell = document.querySelector(`[data-row="${move.to.row}"][data-col="${move.to.col}"]`);
+                if (pieceCell) {
+                    const movingPiece = pieceCell.querySelector('.piece');
+                    if (movingPiece) {
+                        movingPiece.style.animation = 'multiCapture 0.6s ease';
+                    }
+                }
+                
+                playSound('multiCapture');
             }
             
-            if ((piece.color === 'white' && move.to.row === 0) ||
-                (piece.color === 'black' && move.to.row === 7)) {
-                piece.isKing = true;
-                playSound('king');
-                checkAchievements('king');
-            }
-            
-            moveCount++;
-            selectedCell = null;
-            validMoves = [];
-            
-            const whitePieces = board.flat().filter(p => p && p.color === 'white').length;
-            const blackPieces = board.flat().filter(p => p && p.color === 'black').length;
-            
-            if (whitePieces === 0 || blackPieces === 0) {
-                gameOver = true;
-                const winner = whitePieces > 0 ? 'white' : 'black';
-                currentPlayer = winner;
-                playSound('win');
-                checkAchievements('win', captureCount);
-                showModal(
-                    winner === 'white' ? '🏆 Победа!' : '😔 Поражение',
-                    winner === 'white' ? `Вы выиграли за ${moveCount} ходов!` : 'ИИ победил!'
-                );
-                clearInterval(timerInterval);
+            setTimeout(() => {
+                move.captures.forEach(capture => {
+                    board[capture.row][capture.col] = null;
+                    captureCount++;
+                });
+                
+                if (move.captures.length > 0) {
+                    checkAchievements('capture', move.captures.length);
+                } else {
+                    playSound('move');
+                }
+                
+                if ((piece.color === 'white' && move.to.row === 0) ||
+                    (piece.color === 'black' && move.to.row === 7)) {
+                    piece.isKing = true;
+                    playSound('king');
+                    checkAchievements('king');
+                }
+                
+                moveCount++;
+                selectedCell = null;
+                validMoves = [];
+                
+                const whitePieces = board.flat().filter(p => p && p.color === 'white').length;
+                const blackPieces = board.flat().filter(p => p && p.color === 'black').length;
+                
+                if (whitePieces === 0 || blackPieces === 0) {
+                    gameOver = true;
+                    const winner = whitePieces > 0 ? 'white' : 'black';
+                    currentPlayer = winner;
+                    playSound('win');
+                    checkAchievements('win', captureCount);
+                    showModal(
+                        winner === 'white' ? '🏆 Победа!' : '😔 Поражение',
+                        winner === 'white' ? `Вы выиграли за ${moveCount} ходов!` : 'ИИ победил!'
+                    );
+                    clearInterval(timerInterval);
+                    updateStats();
+                    return;
+                }
+                
+                currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+                
+                const currentMoves = getAllMoves(currentPlayer);
+                if (currentMoves.length === 0) {
+                    gameOver = true;
+                    const winner = currentPlayer === 'white' ? 'black' : 'white';
+                    currentPlayer = winner;
+                    playSound('win');
+                    checkAchievements('win', captureCount);
+                    showModal(
+                        winner === 'white' ? '🏆 Победа!' : '😔 Поражение',
+                        'Противник не может ходить!'
+                    );
+                    clearInterval(timerInterval);
+                    updateStats();
+                    return;
+                }
+                
                 updateStats();
-                return;
-            }
-            
-            currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
-            
-            const currentMoves = getAllMoves(currentPlayer);
-            if (currentMoves.length === 0) {
-                gameOver = true;
-                const winner = currentPlayer === 'white' ? 'black' : 'white';
-                currentPlayer = winner;
-                playSound('win');
-                checkAchievements('win', captureCount);
-                showModal(
-                    winner === 'white' ? '🏆 Победа!' : '😔 Поражение',
-                    'Противник не может ходить!'
-                );
-                clearInterval(timerInterval);
-                updateStats();
-                return;
-            }
-            
-            updateStats();
-            renderBoard();
-            
-            if (currentPlayer === aiColor && !gameOver) {
-                isAIThinking = true;
-                document.getElementById('info').textContent = 'ИИ думает...';
-                setTimeout(() => {
-                    aiMove();
-                    isAIThinking = false;
-                }, 800);
-            }
+                renderBoard();
+                
+                if (currentPlayer === aiColor && !gameOver) {
+                    isAIThinking = true;
+                    setTimeout(() => {
+                        aiMove();
+                        isAIThinking = false;
+                    }, 500);
+                }
+            }, move.captures.length > 1 ? 600 : 0);
         }
         
-        // Ход ИИ
         function aiMove() {
             if (gameOver) return;
             
@@ -1127,32 +1136,30 @@
             makeMove(bestMove);
         }
         
-        // Новая игра
         function newGame() {
+            if (timerInterval) clearInterval(timerInterval);
+            isAIThinking = false;
+            
             initBoard();
             selectedCell = null;
             validMoves = [];
             currentPlayer = 'white';
             gameOver = false;
-            isAIThinking = false;
             moveCount = 0;
             captureCount = 0;
             seconds = 0;
             
-            clearInterval(timerInterval);
-            startTimer();
+            document.getElementById('modal').style.display = 'none';
             
-            document.getElementById('info').textContent = 'Новая игра! Вы ходите первыми';
+            startTimer();
             renderBoard();
             updateStats();
         }
         
-        // Закрытие
         function closeGame() {
             tg.close();
         }
         
-        // Инициализация
         createParticles();
         initBoard();
         renderBoard();
